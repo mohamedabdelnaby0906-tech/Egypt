@@ -1,0 +1,2021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AeroFlame | NASA PSI & MAPTIS 22-Material Combustion Analyzer</title>
+  <style>
+    :root {
+      --bg-main: #050811;
+      --bg-panel: #0e1526;
+      --bg-sub: #152038;
+      --border: #24355a;
+      --cyan: #38bdf8;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --purple: #a855f7;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #101c38 0%, var(--bg-main) 75%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 16px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 22px;
+      margin-bottom: 14px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.45);
+    }
+
+    .brand h1 {
+      font-size: 1.38rem;
+      color: var(--cyan);
+      letter-spacing: 0.5px;
+    }
+
+    .brand p {
+      font-size: 0.83rem;
+      color: var(--muted);
+    }
+
+    .badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      background: var(--bg-sub);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.77rem;
+      font-weight: 600;
+    }
+
+    .badge.active {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    /* Presets Bar */
+    .presets-bar {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 18px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .presets-bar span {
+      font-size: 0.77rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-right: 6px;
+    }
+
+    .btn-preset {
+      background: var(--bg-sub);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 7px 11px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-preset:hover {
+      border-color: var(--cyan);
+      background: rgba(56, 189, 248, 0.15);
+    }
+
+    .btn-preset.danger {
+      border-color: rgba(239, 68, 68, 0.5);
+      color: #fca5a5;
+    }
+
+    .btn-preset.spinoff {
+      border-color: rgba(168, 85, 247, 0.5);
+      color: #d8b4fe;
+    }
+
+    /* Top Grid */
+    .top-grid {
+      display: grid;
+      grid-template-columns: 1.08fr 1.32fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 1080px) {
+      .top-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .panel-title {
+      font-size: 0.93rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--cyan);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .control-group {
+      margin-bottom: 10px;
+    }
+
+    .control-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 650px) {
+      .control-row-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.81rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .val-tag {
+      color: var(--cyan);
+      font-weight: 700;
+      font-family: monospace;
+    }
+
+    select, input[type="range"], input[type="text"] {
+      width: 100%;
+      background: var(--bg-sub);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 0.84rem;
+    }
+
+    optgroup {
+      background: #0b1120;
+      color: var(--cyan);
+      font-weight: bold;
+    }
+
+    option {
+      background: var(--bg-sub);
+      color: var(--text);
+    }
+
+    input[type="range"] {
+      padding: 0;
+      height: 7px;
+      cursor: pointer;
+      accent-color: var(--cyan);
+    }
+
+    .nasa-ref-box {
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 0.79rem;
+      margin-top: 6px;
+    }
+
+    .nasa-ref-box strong {
+      color: var(--cyan);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    /* Visualizer */
+    .canvas-box {
+      position: relative;
+      background: #02050a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      height: 220px;
+      overflow: hidden;
+      margin-bottom: 11px;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .hud-overlay {
+      position: absolute;
+      top: 9px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+      pointer-events: none;
+    }
+
+    .hud-bottom {
+      position: absolute;
+      bottom: 8px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+      pointer-events: none;
+    }
+
+    .hud-tag {
+      background: rgba(14, 21, 38, 0.88);
+      border: 1px solid var(--border);
+      padding: 3px 9px;
+      border-radius: 5px;
+      font-size: 0.73rem;
+      font-family: monospace;
+      color: var(--cyan);
+    }
+
+    .verdict-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 9px;
+      margin-bottom: 9px;
+    }
+
+    @media (max-width: 700px) {
+      .verdict-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .verdict-card {
+      background: var(--bg-sub);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px;
+      text-align: center;
+    }
+
+    .verdict-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .verdict-val {
+      font-size: 1.04rem;
+      font-weight: 800;
+      font-family: monospace;
+    }
+
+    .prob-bar-wrap {
+      background: #090d1a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      height: 10px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .prob-bar-fill {
+      height: 100%;
+      width: 50%;
+      background: var(--amber);
+      transition: width 0.3s, background 0.3s;
+    }
+
+    /* Shuttle Smoke Detector & Crew Air Tank Strip */
+    .spinoff-strip {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 9px;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 680px) {
+      .spinoff-strip {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .spinoff-box {
+      background: #0a1020;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--purple);
+      border-radius: 7px;
+      padding: 8px 10px;
+      font-size: 0.77rem;
+    }
+
+    .spinoff-box strong {
+      display: block;
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      color: #c084fc;
+      margin-bottom: 2px;
+    }
+
+    /* Cool Flame Cooldown Alert Banner */
+    .coolflame-banner {
+      display: none;
+      background: rgba(168, 85, 247, 0.14);
+      border: 1px solid var(--purple);
+      color: #e9d5ff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      margin-bottom: 10px;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+    }
+
+    .coolflame-banner.show {
+      display: flex;
+    }
+
+    .btn-suppress {
+      width: 100%;
+      padding: 11px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.84rem;
+      cursor: pointer;
+      background: var(--red);
+      color: #fff;
+      transition: 0.2s;
+    }
+
+    .btn-suppress.active {
+      background: var(--green);
+    }
+
+    /* 7-Point Report Grid */
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    @media (max-width: 1100px) {
+      .analysis-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .pillar-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--cyan);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .pillar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--cyan);
+    }
+
+    .pillar-metric {
+      font-size: 1.14rem;
+      font-weight: 800;
+      font-family: monospace;
+      color: var(--text);
+    }
+
+    .pillar-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .tag-list {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .gas-tag {
+      background: rgba(239, 68, 68, 0.14);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.74rem;
+      font-family: monospace;
+      font-weight: 600;
+    }
+
+    .safe-card {
+      border-top-color: var(--green);
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, var(--bg-panel) 100%);
+    }
+
+    .safe-card .pillar-header {
+      color: var(--green);
+    }
+
+    /* Interactive 22-Material Database Table */
+    .table-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .search-box {
+      max-width: 340px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      max-height: 360px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      text-align: left;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: #090f1d;
+      color: var(--cyan);
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 9px 12px;
+      border-bottom: 1px solid rgba(36, 53, 90, 0.5);
+      color: var(--text);
+    }
+
+    tr.mat-row {
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    tr.mat-row:hover {
+      background: rgba(56, 189, 248, 0.12);
+    }
+
+    .pill {
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    .pill-safe { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .pill-mod { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .pill-high { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+    footer {
+      margin-top: 18px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 0.76rem;
+      color: var(--muted);
+      text-align: center;
+    }
+  
+/* AeroFlame 2.0 visual upgrade */
+:root{--bg-main:#050914;--bg-panel:rgba(12,22,43,.94);--bg-sub:#101d36;--border:#263b62;--cyan:#55d8ff;--green:#36d6a0;--amber:#ffc15c;--red:#ff647c;--purple:#bd91ff}
+body{background:radial-gradient(ellipse at 12% -10%,#163c67 0,transparent 38%),radial-gradient(ellipse at 95% 12%,#25205b 0,transparent 28%),#050914;padding:22px}
+.container{max-width:1500px}
+.topbar,.panel,.pillar-card,.presets-bar,footer{backdrop-filter:blur(14px);box-shadow:0 14px 40px rgba(0,0,0,.24);border-color:rgba(92,139,196,.24)}
+.topbar{border-radius:18px;padding:22px 26px;position:relative;overflow:hidden}
+.topbar:after{content:"";position:absolute;right:-70px;top:-100px;width:300px;height:240px;border:1px solid rgba(85,216,255,.18);border-radius:50%;box-shadow:0 0 0 25px rgba(85,216,255,.025),0 0 0 55px rgba(85,216,255,.02);pointer-events:none}
+.brand h1{font-size:clamp(1.15rem,2.2vw,1.8rem);letter-spacing:1.1px}
+.brand p{max-width:850px;line-height:1.7}
+.panel{border-radius:16px;padding:21px}
+.panel-title{letter-spacing:.07em}
+.badge{border-radius:99px;padding:7px 13px}
+.btn-preset{border-radius:9px;padding:9px 13px}
+select,input[type=text]{border-radius:10px;min-height:40px}
+input[type=range]{accent-color:var(--cyan)}
+.canvas-box{height:260px;border-radius:14px;border-color:#31517e}
+.verdict-card{border-radius:12px;padding:13px 9px}
+.verdict-val{font-size:clamp(.9rem,1.4vw,1.15rem)}
+.pillar-card{border-radius:14px;padding:18px;min-height:160px}
+.pillar-card:hover{transform:translateY(-2px);transition:.2s;border-color:rgba(85,216,255,.45)}
+.table-wrap{border-radius:12px}
+th{background:#0b1730}
+tr.mat-row:hover{background:rgba(85,216,255,.09)}
+footer{border-radius:14px;line-height:1.8}
+.language-switch{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.language-switch button,.action-btn{border:1px solid #31517e;background:#10213e;color:#eaf6ff;padding:9px 14px;border-radius:10px;cursor:pointer;font-weight:700}
+.language-switch button.active,.action-btn.primary{background:linear-gradient(135deg,#087fae,#3158ad);border-color:#55d8ff}
+.new-section{margin:18px 0;background:linear-gradient(145deg,rgba(12,24,48,.98),rgba(8,15,31,.98));border:1px solid rgba(85,216,255,.25);border-radius:18px;padding:22px;box-shadow:0 14px 40px rgba(0,0,0,.22)}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.section-head h2{font-size:1.08rem;color:var(--cyan);letter-spacing:.06em}
+.report-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.report-controls label{display:block;color:var(--muted);font-size:.82rem;margin-bottom:6px}
+.report-controls select{width:100%;background:var(--bg-sub);color:var(--text);border:1px solid var(--border);padding:10px;border-radius:10px}
+.report-output{margin-top:16px;background:#071226;border:1px solid #29466f;border-radius:14px;padding:18px;min-height:110px;line-height:1.8}
+.report-output h3{color:var(--cyan);margin-bottom:8px}
+.report-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+.report-stat{background:#10203a;border:1px solid #29466f;border-radius:11px;padding:12px}
+.report-stat small{display:block;color:#9bb1cc;font-size:.72rem}
+.report-stat strong{display:block;margin-top:4px;font-size:1rem}
+.hardware-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr);gap:18px}
+.hardware-video{width:100%;border-radius:13px;background:#020611;border:1px solid #29466f;display:block}
+.hardware-notes{display:grid;gap:10px}
+.hardware-step{background:#0d1b34;border:1px solid #263e64;border-radius:12px;padding:13px}
+.hardware-step strong{display:block;color:var(--cyan);margin-bottom:4px}
+.hardware-step p{color:#b5c6dc;font-size:.86rem;line-height:1.65}
+.note{font-size:.78rem;color:#91a6c2;margin-top:10px}
+[dir=rtl] .topbar,[dir=rtl] .panel,[dir=rtl] .new-section{text-align:right}
+[dir=rtl] .panel-title{flex-direction:row-reverse}
+[dir=rtl] .report-stat,[dir=rtl] .hardware-step{text-align:right}
+@media(max-width:800px){body{padding:10px}.report-controls,.report-grid,.hardware-layout{grid-template-columns:1fr}.new-section{padding:15px}.topbar{padding:17px}}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <div class="topbar">
+    <div class="brand">
+      <h1>AEROFLAME // NASA PSI &amp; MAPTIS COMBUSTION INTELLIGENCE</h1>
+      <p>22 Verified NASA Materials: 7-Point Flammability, Thickness Physics, Cool-Flame Chemistry, Shuttle Detector &amp; Smart HVAC Suppression</p>
+    </div>
+    <div class="language-switch" aria-label="Language">
+        <button type="button" class="active" data-lang="en" onclick="setLanguage('en')">EN</button>
+        <button type="button" data-lang="ar" onclick="setLanguage('ar')">العربية</button>
+        <button type="button" data-lang="fr" onclick="setLanguage('fr')">FR</button>
+      </div>
+      <div class="badges">
+      <span class="badge active">Project: AeroFlame</span>
+      <span class="badge">Challenge: Flame in Freefall</span>
+      <span class="badge">22 Verified NASA Materials</span>
+      <span class="badge">Standard: NASA-STD-6001 &amp; MAPTIS</span>
+    </div>
+  </div>
+
+  <!-- Mission & Historical Presets -->
+  <div class="presets-bar">
+    <span>NASA Mission &amp; Experiment Presets:</span>
+    <button class="btn-preset" onclick="setScenario('saffire')">NASA Saffire-III (SIBAL Cloth, 0g)</button>
+    <button class="btn-preset" onclick="setScenario('sofie')">NASA SOFIE (PMMA Thickness, 0g)</button>
+    <button class="btn-preset" onclick="setScenario('cfm_candle')">Mir/Shuttle CFM (Cool Candle Flame)</button>
+    <button class="btn-preset spinoff" onclick="setScenario('dust_test')">Shuttle Detector: Space Dust Test</button>
+    <button class="btn-preset" onclick="setScenario('artemis')">Artemis Lunar Cabin (0.16g, 34% O₂)</button>
+    <button class="btn-preset danger" onclick="setScenario('apollo1')">Apollo 1 Tragedy (Velcro/Foam, 100% O₂)</button>
+    <button class="btn-preset danger" onclick="setScenario('apollo13')">Apollo 13 Tank (PTFE Teflon, 96% O₂)</button>
+    <button class="btn-preset danger" onclick="setScenario('mir')">Mir 1997 Fire (45% O₂ Surge)</button>
+    <button class="btn-preset" onclick="setScenario('ultem_safe')">ISS 3D-Print Benchmark (ULTEM 9085)</button>
+  </div>
+
+  <!-- Top Grid: Controls + Visualizer -->
+  <div class="top-grid">
+    <!-- Left Column: Material & Cabin Controls -->
+    <div class="panel">
+      <div class="panel-title">
+        <span>1. Material, Geometry &amp; Cabin Controls</span>
+        <span>22 NASA SAMPLES</span>
+      </div>
+
+      <div class="control-group">
+        <label>Select Verified NASA Material (Categorized by Mission/Experiment):</label>
+        <select id="matSelect" onchange="analyzeMaterial()">
+          <optgroup label="1. NASA PSI Microgravity Combustion Fuels (Saffire / SOFIE / BASS / CFM)">
+            <option value="sibal">SIBAL Fabric (75% Cotton / 25% Fiberglass) — [NASA Saffire I-III]</option>
+            <option value="pmma_cast">Cast PMMA Acrylic (Polymethyl Methacrylate) — [NASA SOFIE &amp; BASS]</option>
+            <option value="birch_wood" selected>Birch Wood / Solid Cellulose — [NASA PSI / FSDC Benchmark]</option>
+            <option value="cotton_100">100% Untreated Cotton Toweling — [NASA BASS / Saffire IV]</option>
+            <option value="whatman_paper">Ashless Cellulose Filter Paper — [NASA FSDC Experiment]</option>
+            <option value="paraffin_wax">Paraffin Candle Wax (Alkanes) — [NASA CFM Mir &amp; Shuttle]</option>
+          </optgroup>
+          <optgroup label="2. Spacecraft Polymers, Glazing &amp; ISS 3D-Printing Resins">
+            <option value="ultem_9085">ULTEM 9085 Polyetherimide (PEI) — [ISS 3D-Printing Certified]</option>
+            <option value="abs_plastic">ABS Thermoplastic Filament — [ISS 1st-Gen 3D Print Material]</option>
+            <option value="lexan_pc">Lexan Polycarbonate — [Spacesuit Visor &amp; Cabin Window]</option>
+            <option value="delrin_pom">Delrin Acetal Resin (POM) — [NASA BASS Invisible Blue Flame]</option>
+          </optgroup>
+          <optgroup label="3. Historical Incident Materials (Apollo 1, Apollo 13, Mir)">
+            <option value="nylon_velcro">Uncoated Nylon Velcro Fastener — [Apollo 1 Cabin Fire 1967]</option>
+            <option value="pu_foam">Polyurethane Open-Cell Acoustic Foam — [Apollo 1 Padding]</option>
+            <option value="ptfe_teflon">PTFE Teflon Wire Insulation — [Apollo 13 Cryo O₂ Tank 1970]</option>
+            <option value="neoprene_rubber">Neoprene Elastomer Hatch Seal — [Spacecraft Gasket Material]</option>
+          </optgroup>
+          <optgroup label="4. Avionics Wiring, PCBs &amp; Thermal Blankets (NASA Test 4)">
+            <option value="pvc_wire">PVC Cable Jacket Insulation — [Prohibited Commercial Wiring]</option>
+            <option value="kapton_hn">DuPont Kapton HN Polyimide Film — [Spacecraft MLI &amp; Harness]</option>
+            <option value="fr4_epoxy">FR-4 Epoxy-Fiberglass Laminate — [Avionics PCB Substrate]</option>
+          </optgroup>
+          <optgroup label="5. NASA Spinoff Fire-Resistant Attire &amp; Hull Metals (Approved)">
+            <option value="nomex_iii">Nomex IIIA Meta-Aramid Textile — [ISS Crew Acoustic &amp; Cargo Bags]</option>
+            <option value="pbi_gold">PBI / Kevlar Blend — [NASA Spacesuit &amp; Firefighter Spinoff]</option>
+            <option value="beta_cloth">Teflon-Coated Beta Cloth Silica Fiber — [Apollo/ISS Outer Shield]</option>
+            <option value="gore_tex_ptfe">Ortho-Fabric (ePTFE / Kevlar / Nomex) — [NASA EMU Spacesuit]</option>
+            <option value="al_2219">Aluminum Alloy 2219-T87 — [ISS Primary Hull &amp; Racks]</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="control-row-2">
+        <div class="control-group" style="margin-bottom:0;">
+          <label>Gravity Regime:</label>
+          <select id="gravSelect" onchange="analyzeMaterial()">
+            <option value="0.0" selected>Microgravity — ISS (0.00g)</option>
+            <option value="0.16">Lunar — Artemis (0.16g)</option>
+            <option value="0.38">Martian — Mars (0.38g)</option>
+            <option value="1.0">Earth — Launch Pad (1.00g)</option>
+          </select>
+        </div>
+
+        <div class="control-group" style="margin-bottom:0;">
+          <label>HVAC Airflow Mode (ISS Guide):</label>
+          <select id="flowDirSelect" onchange="analyzeMaterial()">
+            <option value="concurrent" selected>Concurrent Flow (With Flame — Faster)</option>
+            <option value="opposed">Opposed Flow (Against Flame — Slower)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="control-row-2">
+        <div class="control-group" style="margin-bottom:0;">
+          <label>Sample Thickness: <span id="thickVal" class="val-tag">2.5 mm (Standard)</span></label>
+          <input type="range" id="thickSlider" min="0.5" max="15.0" step="0.5" value="2.5" oninput="analyzeMaterial()" />
+        </div>
+
+        <div class="control-group" style="margin-bottom:0;">
+          <label>Cabin Background Dust: <span id="dustVal" class="val-tag">10% (Clean)</span></label>
+          <input type="range" id="dustSlider" min="0" max="100" value="10" oninput="analyzeMaterial()" />
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label>Cabin Oxygen Concentration (O₂): <span id="o2Val" class="val-tag">21%</span></label>
+        <input type="range" id="o2Slider" min="14" max="100" value="21" oninput="analyzeMaterial()" />
+      </div>
+
+      <div class="control-row-2">
+        <div class="control-group" style="margin-bottom:0;">
+          <label>Cabin Pressure: <span id="pressVal" class="val-tag">14.7 psi</span></label>
+          <input type="range" id="pressSlider" min="5" max="18" step="0.1" value="14.7" oninput="analyzeMaterial()" />
+        </div>
+
+        <div class="control-group" style="margin-bottom:0;">
+          <label>HVAC Airflow Speed: <span id="airVal" class="val-tag">15 cm/s</span></label>
+          <input type="range" id="airSlider" min="0" max="50" value="15" oninput="onManualAirChange()" />
+        </div>
+      </div>
+
+      <div class="nasa-ref-box">
+        <strong id="refTitle">NASA Experiment / Standard Reference:</strong>
+        <span id="refText">NASA PSI FSDC &amp; NASA-STD-6001 Test 1: Cellulosic solid fuel benchmark for upward vs. microgravity forced-flow flame spread.</span>
+      </div>
+    </div>
+
+    <!-- Right Column: Live Visualizer & Verdict -->
+    <div class="panel">
+      <div class="panel-title">
+        <span>2. AeroFlame Visualizer &amp; Space Suitability</span>
+        <span id="gravTag">0.00g MICROGRAVITY</span>
+      </div>
+
+      <div class="canvas-box">
+        <canvas id="flameCanvas" width="620" height="220"></canvas>
+        <div class="hud-overlay">
+          <span class="hud-tag" id="hudShape">Flame Geometry: 0g Spherical Front</span>
+          <span class="hud-tag" id="hudLOI">LOI Threshold: 17.0% O₂</span>
+          <span class="hud-tag" id="hudAir">HVAC O₂ Flow: 15 cm/s</span>
+        </div>
+        <div class="hud-bottom">
+          <span class="hud-tag" id="hudThick">Thermal Regime: Intermediate (2.5 mm)</span>
+          <span class="hud-tag" id="hudFlameTemp">Flame State: Hot Visible Flame (~1100°C)</span>
+        </div>
+      </div>
+
+      <div class="verdict-grid">
+        <div class="verdict-card">
+          <div class="verdict-label">1. Space Suitability</div>
+          <div class="verdict-val" id="suitabilityBadge" style="color: var(--red);">REJECTED</div>
+        </div>
+        <div class="verdict-card">
+          <div class="verdict-label">2. Fire Probability</div>
+          <div class="verdict-val" id="probValue" style="color: var(--amber);">68%</div>
+        </div>
+        <div class="verdict-card">
+          <div class="verdict-label">Limiting O₂ Index (LOI)</div>
+          <div class="verdict-val" id="loiBadge" style="color: var(--cyan);">17.0% O₂</div>
+        </div>
+        <div class="verdict-card">
+          <div class="verdict-label">Risk Classification</div>
+          <div class="verdict-val" id="hazardClass" style="color: var(--red);">HIGH RISK</div>
+        </div>
+      </div>
+
+      <div class="prob-bar-wrap">
+        <div class="prob-bar-fill" id="probBar"></div>
+      </div>
+
+      <!-- NASA Spinoff Telemetry: Shuttle Detector & Fireman's Air Tanks -->
+      <div class="spinoff-strip">
+        <div class="spinoff-box">
+          <strong>Shuttle Smoke Discriminator (1970s Spinoff):</strong>
+          <span id="shuttleDetText">Soot + Heat cross-check verified: Active combustion particles detected.</span>
+        </div>
+        <div class="spinoff-box">
+          <strong>Crew SCBA Air Tank Margin (Fireman Spinoff):</strong>
+          <span id="airTankText">Don SCBA Masks within 3.2 min (CO build-up in sealed cabin).</span>
+        </div>
+      </div>
+
+      <!-- NASA ScienceCasts Cool-Flame Cooldown Banner -->
+      <div class="coolflame-banner" id="coolFlameBanner">
+        <span id="coolFlameText">⚠️ NASA ScienceCasts Cool-Flame Guard (~300°C Invisible Pyrolysis): Do NOT restore O₂ flow yet!</span>
+        <span id="coolFlameTimer" style="font-family:monospace; color:var(--cyan);">60s</span>
+      </div>
+
+      <button class="btn-suppress" id="suppressBtn" onclick="toggleHVAC()">
+        ACTIVATE AEROFLAME SMART H-BRIDGE HVAC CUTOFF (0 cm/s)
+      </button>
+    </div>
+  </div>
+
+  <!-- 5 Comprehensive Analysis Pillars + Safer Alternatives -->
+  <div class="analysis-grid">
+    <div class="pillar-card">
+      <div class="pillar-header">
+        <span>3. Ignition Time (وقت الاشتعال)</span>
+        <span>PILLAR 1</span>
+      </div>
+      <div class="pillar-metric" id="ignTimeVal">14.2 Seconds</div>
+      <div class="pillar-desc" id="ignTimeDesc"></div>
+    </div>
+
+    <div class="pillar-card">
+      <div class="pillar-header">
+        <span>4. Flame Propagation (انتشار اللهب)</span>
+        <span>PILLAR 2</span>
+      </div>
+      <div class="pillar-metric" id="propRateVal">2.10 mm/s</div>
+      <div class="pillar-desc" id="propDesc"></div>
+    </div>
+
+    <div class="pillar-card">
+      <div class="pillar-header">
+        <span>5. Smoke Production (إنتاج الدخان)</span>
+        <span>PILLAR 3</span>
+      </div>
+      <div class="pillar-metric" id="smokeVal">HIGH (70%)</div>
+      <div class="pillar-desc" id="smokeDesc"></div>
+    </div>
+
+    <div class="pillar-card">
+      <div class="pillar-header">
+        <span>6. Toxic Gas Emissions (الغازات السامة)</span>
+        <span>PILLAR 4 (NASA TEST 7)</span>
+      </div>
+      <div class="pillar-metric" id="toxLevelVal">HIGH HAZARD</div>
+      <div class="pillar-desc" id="toxDesc"></div>
+      <div class="tag-list" id="gasTags"></div>
+    </div>
+
+    <div class="pillar-card">
+      <div class="pillar-header">
+        <span>Thermal Behavior (السلوك الحراري)</span>
+        <span>PILLAR 5</span>
+      </div>
+      <div class="pillar-metric" id="thermalVal">Pyrolysis @ 280°C</div>
+      <div class="pillar-desc" id="thermalDesc"></div>
+    </div>
+
+    <div class="pillar-card safe-card">
+      <div class="pillar-header">
+        <span>7. Safer NASA Alternative (البديل الآمن)</span>
+        <span>SPINOFF ADVISOR</span>
+      </div>
+      <div class="pillar-metric" id="altTitleVal">Nomex Honeycomb</div>
+      <div class="pillar-desc" id="altDesc"></div>
+    </div>
+  </div>
+
+  <!-- Interactive 22-Material Database Explorer -->
+  <div class="panel">
+    <div class="table-header-bar">
+      <div class="panel-title" style="border:none; margin:0; padding:0;">
+        <span>AeroFlame // NASA PSI &amp; MAPTIS 22-Material Database (Click Any Row to Simulate)</span>
+      </div>
+      <div class="search-box">
+        <input type="text" id="tableSearch" placeholder="Search material, NASA test, or toxic gas..." oninput="renderTable()" />
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Material Name</th>
+            <th>Category / NASA Source</th>
+            <th>LOI (Min O₂%)</th>
+            <th>Base Spread (0g)</th>
+            <th>Pyrolysis Temp</th>
+            <th>Primary Toxic Gases</th>
+            <th>ISS (21% O₂) Rating</th>
+          </tr>
+        </thead>
+        <tbody id="matTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <section class="new-section" id="incidentSection">
+    <div class="section-head">
+      <h2 id="reportHeading">MISSION INCIDENT REPORT</h2>
+      <button class="action-btn primary" id="generateReportBtn" type="button" onclick="generateIncidentReport()">Generate incident report</button>
+    </div>
+    <div class="report-controls">
+      <div><label id="crewLabel" for="crewStatus">Astronaut / crew status</label>
+        <select id="crewStatus">
+          <option value="absent">No astronaut in the affected zone</option>
+          <option value="present">Astronaut present</option>
+          <option value="unknown">Crew status unknown</option>
+        </select>
+      </div>
+      <div><label id="zoneLabel" for="incidentZone">Affected zone</label>
+        <select id="incidentZone"><option value="Zone L">Zone L</option><option value="Zone R">Zone R</option><option value="Cabin">Main cabin</option></select>
+      </div>
+      <div><label id="eventLabel" for="eventStatus">Event status</label>
+        <select id="eventStatus"><option value="detected">Fire signal detected</option><option value="false_alarm">Dust / false alarm scenario</option><option value="normal">Normal monitoring</option></select>
+      </div>
+    </div>
+    <div class="report-output" id="reportOutput" aria-live="polite">
+      <h3 id="reportPlaceholderTitle">Ready to generate</h3>
+      <p id="reportPlaceholder">Choose the crew status and event details, then generate a concise mission report. The report uses the current simulator readings.</p>
+    </div>
+    <p class="note" id="reportDisclaimer">Simulation-generated report. It is not a flight-certified safety assessment or a substitute for approved spacecraft procedures.</p>
+  </section>
+
+  <section class="new-section" id="hardwareSection">
+    <div class="section-head">
+      <h2 id="hardwareHeading">HARDWARE SYSTEM — HOW IT WORKS</h2>
+      <span class="badge active" id="videoBadge">VIDEO WALKTHROUGH · 32 SEC</span>
+    </div>
+    <div class="hardware-layout">
+      <div>
+        <video class="hardware-video" controls preload="metadata" playsinline>
+          <source src="hardware-demo.mp4" type="video/mp4">
+          Your browser does not support embedded video.
+        </video>
+        <p class="note" id="videoCaption">The supplied clip compares a simulated correct response with a fan-fault case.</p>
+      </div>
+      <div class="hardware-notes">
+        <div class="hardware-step"><strong id="hw1Title">01 · Sensor layer</strong><p id="hw1Text">Temperature and atmosphere readings are monitored by zone. A fire indicator is treated as an event signal that needs confirmation.</p></div>
+        <div class="hardware-step"><strong id="hw2Title">02 · Controller</strong><p id="hw2Text">The controller receives sensor states, checks the affected zone, and coordinates the response logic shown in the simulation.</p></div>
+        <div class="hardware-step"><strong id="hw3Title">03 · Isolation status</strong><p id="hw3Text">The clip illustrates a zone boundary and door-state change to represent separating the affected area from the rest of the cabin.</p></div>
+        <div class="hardware-step"><strong id="hw4Title">04 · Airflow / fan feedback</strong><p id="hw4Text">Fan status is monitored. The comparison highlights that a fan fault can make the simulated event trend worse than the intended response.</p></div>
+        <div class="hardware-step"><strong id="hw5Title">05 · Crew-independent reporting</strong><p id="hw5Text">If no astronaut is in the affected zone, the dashboard records the event, system states, and whether automatic monitoring reports a fault. It does not assume a human has acknowledged the alarm.</p></div>
+      </div>
+    </div>
+    <p class="note" id="hardwareDisclaimer">Hardware explanation is based on what is visible in your supplied animation. It does not identify exact physical components, wiring, or a verified flight design.</p>
+  </section>
+
+  <footer>
+    <strong>AeroFlame — NASA Open Data &amp; Standards Attribution:</strong> Compiled from the <em>NASA Physical Sciences Informatics (PSI) Data Repository (Saffire I-VI, SOFIE, BASS, CFM, FSDC)</em>, <em>A Researcher's Guide to ISS Combustion Science</em>, <em>NASA ScienceCasts (Spherical Cool Flames)</em>, <em>NASA-STD-6001</em>, historical incident investigations (<em>Apollo 1, Apollo 13, Space Station Mir 1997</em>), and NASA Spinoff archives (<em>Shuttle Photoelectric Smoke Detector, Fireman's Air Tanks, and PBI/Nomex Fire Attire</em>). Independent NASA Space Apps Challenge entry.
+  </footer>
+</div>
+
+<script>
+  const materials = {
+    sibal: {
+      name: "SIBAL Fabric (75% Cotton / 25% Fiberglass)",
+      cat: "NASA Saffire I–III & BASS",
+      ref: "NASA Saffire-I, II, III & BASS Benchmark: Composite cloth used in large-scale Cygnus spacecraft microgravity fire experiments.",
+      baseIgnSec: 7.5,
+      baseSpread: 2.45,
+      minO2: 16.5,
+      smokeBase: 62,
+      pyroTemp: "255°C",
+      gases: ["CO", "CO₂", "Aldehydes", "Char Soot"],
+      toxSeverity: "HIGH (Cabin CO Accumulation)",
+      toxInfo: "Cotton matrix burns away leaving a glowing fiberglass mesh; releases significant Carbon Monoxide in sealed modules.",
+      thermalHead: "Cotton Pyrolysis @ 255°C (Fiberglass Intact)",
+      thermalInfo: "Fiberglass grid holds the char layer in place, preventing molten droplets while sustaining a steady 0g flame front.",
+      altTitle: "NASA Beta Cloth or Nomex IIIA",
+      altInfo: "Replace cotton-blend fabrics with Teflon-coated Beta Cloth or 100% Nomex aramid textiles.",
+      rating: "HIGH RISK"
+    },
+    pmma_cast: {
+      name: "Cast PMMA Acrylic (Plexiglas)",
+      cat: "NASA SOFIE & BASS",
+      ref: "NASA SOFIE (Solid Fuel Ignition and Extinction) & BASS primary transparent polymer benchmark on the ISS.",
+      baseIgnSec: 25.0,
+      baseSpread: 1.50,
+      minO2: 17.3,
+      smokeBase: 48,
+      pyroTemp: "260°C",
+      gases: ["CO", "CO₂", "MMA Monomer Vapor"],
+      toxSeverity: "MODERATE-HIGH (Irritant Monomer)",
+      toxInfo: "Thermal depolymerization releases flammable Methyl Methacrylate (MMA) vapor and Carbon Monoxide.",
+      thermalHead: "Bubble-Driven Vaporization @ 260°C",
+      thermalInfo: "Low thermal conductivity traps heat at the surface; subsurface boiling ejects vapor jets into the spherical 0g flame.",
+      altTitle: "Lexan Polycarbonate + Beta Shield",
+      altInfo: "Substitute acrylic viewports with self-extinguishing Lexan Polycarbonate or Ultem PEI panels.",
+      rating: "MODERATE"
+    },
+    birch_wood: {
+      name: "Birch Wood / Solid Cellulose",
+      cat: "NASA PSI / FSDC Fuel",
+      ref: "NASA PSI FSDC & BASS Solid Cellulosic Fuel: Evaluates charring, smoldering, and forced-convection flame spread in 0g.",
+      baseIgnSec: 18.0,
+      baseSpread: 2.10,
+      minO2: 17.0,
+      smokeBase: 72,
+      pyroTemp: "280°C",
+      gases: ["CO (High)", "CO₂", "Acrolein", "Formaldehyde"],
+      toxSeverity: "HIGH (Smoldering CO Poisoning)",
+      toxInfo: "Cellulose pyrolysis and incomplete microgravity smoldering generate lethal Carbon Monoxide and eye-irritating acrolein.",
+      thermalHead: "Exothermic Charring @ 260–300°C",
+      thermalInfo: "Forms a porous carbon char insulating layer that retains heat and promotes persistent glowing smoldering.",
+      altTitle: "Anodized Aluminum or Nomex Core",
+      altInfo: "Raw wood is prohibited in spacecraft cabins; use lightweight Aluminum 2219 or Nomex phenolic honeycomb panels.",
+      rating: "HIGH RISK"
+    },
+    cotton_100: {
+      name: "100% Untreated Cotton Toweling",
+      cat: "NASA BASS / Saffire IV",
+      ref: "NASA BASS & Saffire Reference Textile: High-surface-area cellulosic fabric demonstrating rapid 0g surface flame creep.",
+      baseIgnSec: 5.5,
+      baseSpread: 3.40,
+      minO2: 16.0,
+      smokeBase: 65,
+      pyroTemp: "235°C",
+      gases: ["CO", "CO₂", "Acetaldehyde", "Fine Soot"],
+      toxSeverity: "HIGH (Rapid O₂ Depletion & CO)",
+      toxInfo: "Rapid surface flash consumes local oxygen and releases dense Carbon Monoxide and organic volatiles.",
+      thermalHead: "Flash Cellulose Pyrolysis @ 235°C",
+      thermalInfo: "Very low thermal inertia; loose fibers heat instantaneously and propagate flame in the direction of HVAC airflow.",
+      altTitle: "NASA PBI / Nomex Crew Attire",
+      altInfo: "Strictly limit untreated cotton in high-O₂ missions; transition crew garments to PBI/Nomex fire-resistant blends.",
+      rating: "HIGH RISK"
+    },
+    whatman_paper: {
+      name: "Ashless Cellulose Filter Paper",
+      cat: "NASA FSDC Experiment",
+      ref: "NASA FSDC (Flame Spread Across Discrete Fuels) Shuttle/ISS experiment for thin-fuel microgravity flame propagation.",
+      baseIgnSec: 3.2,
+      baseSpread: 4.20,
+      minO2: 15.8,
+      smokeBase: 55,
+      pyroTemp: "220°C",
+      gases: ["CO", "CO₂", "Levoglucosan Vapor"],
+      toxSeverity: "MODERATE-HIGH (Fast CO Release)",
+      toxInfo: "Thin cellulose sheet gasifies completely within seconds, spiking localized Carbon Monoxide levels.",
+      thermalHead: "Thermally Thin Instant Heating @ 220°C",
+      thermalInfo: "Zero thickness thermal gradient; heat penetrates both sides simultaneously for ultra-fast flame spread.",
+      altTitle: "Nomex Aramid Paper (Type 410)",
+      altInfo: "Store flight checklists on flame-retardant Nomex paper or transition completely to radiation-hardened crew tablets.",
+      rating: "HIGH RISK"
+    },
+    paraffin_wax: {
+      name: "Paraffin Candle Wax (Alkanes)",
+      cat: "NASA CFM (Mir & Shuttle)",
+      ref: "NASA Candle Flame in Microgravity (CFM) aboard Mir & Space Shuttle: Famous demonstration of spherical blue cool flames.",
+      baseIgnSec: 12.0,
+      baseSpread: 0.90,
+      minO2: 16.5,
+      smokeBase: 30,
+      pyroTemp: "195°C",
+      gases: ["CO", "CO₂", "Unburned Alkane Vapor", "Formaldehyde (Cool Flame)"],
+      toxSeverity: "MODERATE (Cool-Flame CO & Alkanes)",
+      toxInfo: "In 0g, forms a soot-free dim blue spherical flame that transitions into a ~300°C invisible cool flame before extinguishing.",
+      thermalHead: "Capillary Wick Melting @ 60–195°C",
+      thermalInfo: "Melts into a liquid ball around the wick; radiates very little heat in 0g, sustaining cool-flame chemistry.",
+      altTitle: "Solid-State LED / Encapsulated PCM",
+      altInfo: "Encapsulate phase-change thermal waxes inside sealed metallic heat exchangers.",
+      rating: "MODERATE"
+    },
+    ultem_9085: {
+      name: "ULTEM 9085 Polyetherimide (PEI)",
+      cat: "ISS 3D-Printing Certified",
+      ref: "NASA In-Space Manufacturing (ISM) & MAPTIS Approved: Flight-certified flame-retardant 3D printing polymer on the ISS.",
+      baseIgnSec: 140.0,
+      baseSpread: 0.08,
+      minO2: 47.0,
+      smokeBase: 6,
+      pyroTemp: "530°C",
+      gases: ["Trace CO₂", "Trace CO (>530°C)"],
+      toxSeverity: "MINIMAL (NASA Test 7 Compliant)",
+      toxInfo: "Passes NASA-STD-6001 Test 1 & Test 7 with ultra-low off-gassing and near-zero smoke production.",
+      thermalHead: "High Glass Transition & Char @ 530°C",
+      thermalInfo: "Intrinsically flame-retardant aromatic imide structure; immediately self-extinguishes in ISS and Artemis atmospheres.",
+      altTitle: "Approved Primary 3D-Print Polymer",
+      altInfo: "Gold-standard polymer for on-orbit fabrication of tools, brackets, and ventilation ducts.",
+      rating: "SAFE"
+    },
+    abs_plastic: {
+      name: "ABS Thermoplastic (3D Filament)",
+      cat: "Commercial Polymer",
+      ref: "ISS 1st-Gen Made-In-Space Test Polymer: Evaluated for ultrafine particle and toxic gas emissions in closed cabins.",
+      baseIgnSec: 14.0,
+      baseSpread: 2.35,
+      minO2: 18.5,
+      smokeBase: 86,
+      pyroTemp: "310°C",
+      gases: ["HCN (Hydrogen Cyanide)", "CO", "Styrene", "1,3-Butadiene"],
+      toxSeverity: "CRITICAL (Cyanide & Carcinogenic Soot)",
+      toxInfo: "Acrylonitrile group releases deadly Hydrogen Cyanide (HCN) and thick black styrene soot when burned.",
+      thermalHead: "Softening & Boiling Pyrolysis @ 310°C",
+      thermalInfo: "Melts into a flaming viscous pool that continues generating heavy soot clouds in microgravity.",
+      altTitle: "ULTEM 9085 or PEEK Filament",
+      altInfo: "Replace commercial ABS filament with flight-certified ULTEM 9085 or PEEK high-temperature polymers.",
+      rating: "HIGH RISK"
+    },
+    lexan_pc: {
+      name: "Lexan Polycarbonate (Glazing)",
+      cat: "Spacesuit Visor & Window",
+      ref: "NASA EMU Spacesuit Helmet Bubble & Cabin Glazing: Impact-resistant carbonate polymer with moderate LOI.",
+      baseIgnSec: 42.0,
+      baseSpread: 0.72,
+      minO2: 25.0,
+      smokeBase: 38,
+      pyroTemp: "420°C",
+      gases: ["CO", "CO₂", "Phenol Derivatives"],
+      toxSeverity: "LOW-MODERATE (Self-Extinguishes in 21% O₂)",
+      toxInfo: "Resists ignition in standard ISS air (21% O₂), but can sustain slow burning in enriched Artemis (34% O₂) atmospheres.",
+      thermalHead: "Intumescent Char Formation @ 420°C",
+      thermalInfo: "Forms a foamed carbon char barrier on the surface that blocks oxygen diffusion in normal cabin air.",
+      altTitle: "Aluminosilicate Glass / Coated Lexan",
+      altInfo: "Safe in 21% O₂; for 34% O₂ lunar cabins, apply silica optical coatings or fused quartz windows.",
+      rating: "SAFE"
+    },
+    delrin_pom: {
+      name: "Delrin Acetal Resin (POM)",
+      cat: "NASA BASS Invisible Flame",
+      ref: "NASA BASS Experiment Highlight: Polyoxymethylene burns with an optically invisible pale-blue flame in microgravity.",
+      baseIgnSec: 16.0,
+      baseSpread: 1.95,
+      minO2: 15.0,
+      smokeBase: 5,
+      pyroTemp: "240°C",
+      gases: ["Formaldehyde (CH₂O - Lethal)", "CO", "CO₂"],
+      toxSeverity: "SEVERE (Toxic Formaldehyde Gas)",
+      toxInfo: "Zero black soot tricks simple optical sensors while releasing high concentrations of toxic Formaldehyde gas.",
+      thermalHead: "Clean Unzipping Depolymerization @ 240°C",
+      thermalInfo: "Unzips completely into gaseous formaldehyde monomer with zero solid char residue and a nearly invisible flame.",
+      altTitle: "Vespel Polyimide (SP-1) or PEEK Gears",
+      altInfo: "Extremely dangerous due to low LOI (15%) and invisible flame; replace mechanical gears with DuPont Vespel or PEEK.",
+      rating: "HIGH RISK"
+    },
+    nylon_velcro: {
+      name: "Uncoated Nylon Velcro Fastener",
+      cat: "Apollo 1 Incident (1967)",
+      ref: "Apollo 1 Investigation Report: 34 square feet of nylon Velcro across the cabin propagated fire rapidly in pure O₂.",
+      baseIgnSec: 8.0,
+      baseSpread: 3.10,
+      minO2: 20.0,
+      smokeBase: 58,
+      pyroTemp: "270°C",
+      gases: ["HCN (Hydrogen Cyanide)", "CO", "NH₃ (Ammonia)", "NOx"],
+      toxSeverity: "CRITICAL (Cyanide Gas Hazard)",
+      toxInfo: "Polyamide hooks melt and release toxic Hydrogen Cyanide (HCN) and Carbon Monoxide.",
+      thermalHead: "Rapid Hook Melting & Flash @ 270°C",
+      thermalInfo: "Fine nylon hooks have massive surface-to-volume ratio, igniting like tinder in enriched oxygen (>25% O₂).",
+      altTitle: "NASA Astro-Velcro (Nomex / Stainless Steel)",
+      altInfo: "Use NASA post-Apollo Nomex Velcro or stainless-steel hook fasteners covered with Beta Cloth flaps.",
+      rating: "HIGH RISK"
+    },
+    pu_foam: {
+      name: "Polyurethane Acoustic Cabin Foam",
+      cat: "Apollo 1 Incident (1967)",
+      ref: "Apollo 1 Investigation & NASA MAPTIS: Open-cell polyurethane foam pads caused explosive flame spread and toxic asphyxiation.",
+      baseIgnSec: 3.8,
+      baseSpread: 4.50,
+      minO2: 15.5,
+      smokeBase: 94,
+      pyroTemp: "180°C",
+      gases: ["HCN (Lethal)", "CO (Extreme)", "Toluene Diisocyanate", "NOx"],
+      toxSeverity: "LETHAL (Apollo 1 Class Toxicity)",
+      toxInfo: "Generates blinding black smoke and lethal Hydrogen Cyanide + Carbon Monoxide within 10 seconds of ignition.",
+      thermalHead: "Explosive Cellular Flashover @ 180°C",
+      thermalInfo: "Air-filled pores block heat conduction into the core, concentrating 100% of thermal energy at the burning surface.",
+      altTitle: "Solimide Polyimide Foam / Zotek F",
+      altInfo: "Strictly banned in crewed cabins; replace with NASA Spinoff Solimide polyimide acoustic foam or Zotek PVDF foam.",
+      rating: "HIGH RISK"
+    },
+    ptfe_teflon: {
+      name: "PTFE Teflon Wire Insulation",
+      cat: "Apollo 13 Incident (1970)",
+      ref: "Apollo 13 Investigation Report: Damaged PTFE insulation ignited inside supercritical high-pressure pure O₂ tank.",
+      baseIgnSec: 180.0,
+      baseSpread: 0.05,
+      minO2: 95.0,
+      smokeBase: 10,
+      pyroTemp: "510°C",
+      gases: ["HF (Hydrofluoric Acid)", "COF₂ (Carbonyl Fluoride)", "PFIB"],
+      toxSeverity: "SAFE IN AIR / LETHAL IN 100% O₂",
+      toxInfo: "Completely non-flammable in normal cabin air, but if ignited in pure O₂ (>80%), releases deadly corrosive carbonyl fluoride.",
+      thermalHead: "Inert up to 510°C (LOI = 95% O₂)",
+      thermalInfo: "Strong Carbon-Fluorine bonds resist heat; only sustains combustion in extreme pure-oxygen cryo-tank environments.",
+      altTitle: "Ceramic-Braided / Nickel-Clad Wiring (for Pure O₂)",
+      altInfo: "Safe for standard cabin wiring; inside high-pressure pure O₂ tanks, use inorganic ceramic/glass insulation.",
+      rating: "SAFE"
+    },
+    neoprene_rubber: {
+      name: "Neoprene Elastomer Hatch Seal",
+      cat: "Spacecraft Seals & Hoses",
+      ref: "NASA MAPTIS Elastomer Database: Polychloroprene rubber used in vibration mounts and legacy airlock seals.",
+      baseIgnSec: 34.0,
+      baseSpread: 0.95,
+      minO2: 26.0,
+      smokeBase: 78,
+      pyroTemp: "340°C",
+      gases: ["HCl (Hydrogen Chloride)", "CO", "SO₂", "Chlorinated Soot"],
+      toxSeverity: "HIGH (Corrosive Acid Gas)",
+      toxInfo: "Chlorine content inhibits flame in 21% O₂ but releases corrosive Hydrogen Chloride (HCl) gas that damages lungs and avionics.",
+      thermalHead: "Dechlorination & Charring @ 340°C",
+      thermalInfo: "Self-extinguishes in normal air (LOI 26%), but burns with heavy acid soot in Artemis 34% O₂ atmospheres.",
+      altTitle: "Fluorosilicone or Viton / Kalrez FKM",
+      altInfo: "Upgrade cabin seals to aerospace-grade Fluorosilicone or Viton elastomers (LOI > 50%).",
+      rating: "MODERATE"
+    },
+    pvc_wire: {
+      name: "PVC Cable Jacket Insulation",
+      cat: "Prohibited Commercial Wire",
+      ref: "NASA-STD-6001 Test 4 (Electrical Wire Insulation Flammability): PVC is prohibited in spacecraft due to toxic HCl gas.",
+      baseIgnSec: 22.0,
+      baseSpread: 1.40,
+      minO2: 23.0,
+      smokeBase: 88,
+      pyroTemp: "250°C",
+      gases: ["HCl (Corrosive Acid)", "CO", "Dioxins", "Phosgene Trace"],
+      toxSeverity: "CRITICAL (Avionics & Lung Corrosion)",
+      toxInfo: "Releases dense clouds of hydrochloric acid gas (HCl) that blinds astronauts and corrodes spacecraft circuit boards.",
+      thermalHead: "Plasticizer Boiling & Acid Release @ 250°C",
+      thermalInfo: "Flammable plasticizers vaporize early, feeding flame spread whenever oxygen exceeds 23%.",
+      altTitle: "Tefzel (ETFE) or Kapton / PTFE M22759 Wire",
+      altInfo: "Strictly prohibited by NASA; use MIL-W-22759 PTFE/Kapton aerospace wire harnesses.",
+      rating: "HIGH RISK"
+    },
+    kapton_hn: {
+      name: "DuPont Kapton HN Polyimide Film",
+      cat: "Spacecraft MLI & Harness",
+      ref: "NASA MAPTIS & Apollo/JWST/ISS Standard: High-temperature amber polyimide film used in thermal blankets and insulation.",
+      baseIgnSec: 90.0,
+      baseSpread: 0.22,
+      minO2: 37.0,
+      smokeBase: 9,
+      pyroTemp: "550°C",
+      gases: ["Trace CO", "Trace CO₂ (>550°C)"],
+      toxSeverity: "LOW (Passes NASA Off-Gassing)",
+      toxInfo: "Remains chemically stable across extreme space temperatures (-269°C to +400°C) with negligible toxic emission.",
+      thermalHead: "Infusible Aromatic Polyimide @ 550°C",
+      thermalInfo: "Does not melt; resists ignition even in Artemis 34% O₂ atmospheres (LOI = 37%).",
+      altTitle: "Approved Spacecraft Polyimide Standard",
+      altInfo: "Fully compliant for ISS and Lunar cabin multi-layer insulation (MLI) and flexible circuits.",
+      rating: "SAFE"
+    },
+    fr4_epoxy: {
+      name: "FR-4 Epoxy-Fiberglass PCB",
+      cat: "Avionics Circuit Boards",
+      ref: "NASA-STD-6001 Avionics Enclosure Testing: Brominated flame-retardant epoxy laminated over woven fiberglass cloth.",
+      baseIgnSec: 48.0,
+      baseSpread: 0.65,
+      minO2: 28.0,
+      smokeBase: 64,
+      pyroTemp: "360°C",
+      gases: ["HBr (Hydrogen Bromide)", "CO", "Phenol", "Bromo-organic Soot"],
+      toxSeverity: "HIGH IF OVERHEATED (Irritant HBr)",
+      toxInfo: "Electrical short-circuit arcs pyrolyze the epoxy resin, releasing pungent Hydrogen Bromide (HBr) smoke detected by Shuttle sensors.",
+      thermalHead: "Epoxy Resin Char @ 360°C (Glass Core Intact)",
+      thermalInfo: "Self-extinguishes once electrical fault current is cut in 21% O₂, but sustains burning if O₂ > 28%.",
+      altTitle: "Polyimide PCB (Arlon 85N) + Active HVAC Cutoff",
+      altInfo: "Use high-Tg Polyimide circuit boards and cut avionics bay cooling fan airflow immediately upon smoke detection.",
+      rating: "MODERATE"
+    },
+    nomex_iii: {
+      name: "Nomex IIIA Meta-Aramid Textile",
+      cat: "NASA Spinoff & ISS Standard",
+      ref: "NASA Spinoff (New Technology for Fire Attire) & ISS Cargo Transfer Bags: Flame-resistant meta-aramid fiber.",
+      baseIgnSec: 85.0,
+      baseSpread: 0.28,
+      minO2: 29.0,
+      smokeBase: 12,
+      pyroTemp: "420°C",
+      gases: ["Minimal CO₂", "Trace CO"],
+      toxSeverity: "LOW (Crew Cabin Certified)",
+      toxInfo: "Carbonizes and thickens when exposed to fire without melting, dripping, or releasing lethal cyanide levels in normal air.",
+      thermalHead: "Endothermic Char Swelling @ 420°C",
+      thermalInfo: "Fibers swell and seal fabric pores upon heating, blocking convective heat transfer.",
+      altTitle: "Upgrade to PBI/Kevlar for >30% O₂",
+      altInfo: "Safe for ISS (21% O₂); for Artemis 34% O₂ lunar cabins, blend with PBI or cover with Beta Cloth.",
+      rating: "SAFE"
+    },
+    pbi_gold: {
+      name: "PBI / Kevlar Fire-Blocking Attire",
+      cat: "NASA Spacesuit & Firefighter Spinoff",
+      ref: "NASA Spinoff (1980s Firefighter Attire & Apollo Suit Webbing): Polybenzimidazole fiber developed with NASA after Apollo 1.",
+      baseIgnSec: 135.0,
+      baseSpread: 0.12,
+      minO2: 41.0,
+      smokeBase: 5,
+      pyroTemp: "580°C",
+      gases: ["Negligible Off-Gassing"],
+      toxSeverity: "MINIMAL (Gold Standard Safety)",
+      toxInfo: "Absorbs more thermal energy than almost any organic textile without igniting or emitting toxic smoke.",
+      thermalHead: "Dimensionally Stable up to 580°C",
+      thermalInfo: "Remains supple and intact even after direct flame impingement in 34% O₂ Artemis atmospheres.",
+      altTitle: "Optimal NASA Spinoff Textile",
+      altInfo: "Directly protects both astronauts in enriched oxygen cabins and municipal firefighters on Earth.",
+      rating: "SAFE"
+    },
+    beta_cloth: {
+      name: "Teflon-Coated Beta Cloth (Silica)",
+      cat: "Apollo & ISS Outer Fire Barrier",
+      ref: "NASA Apollo Post-Fire Mandate & ISS Outer Liner: Woven ultrafine silica glass fibers coated with PTFE Teflon.",
+      baseIgnSec: 165.0,
+      baseSpread: 0.09,
+      minO2: 55.0,
+      smokeBase: 4,
+      pyroTemp: "650°C",
+      gases: ["Inert up to 500°C"],
+      toxSeverity: "MINIMAL (Non-Combustible Glass Core)",
+      toxInfo: "Inorganic SiO₂ glass core cannot burn; stops flame propagation across stowage bags and spacecraft walls.",
+      thermalHead: "Thermal Reflection up to 650°C",
+      thermalInfo: "Reflects radiant heat and suffocates underlying flammable materials.",
+      altTitle: "Primary Spacecraft Fire Barrier",
+      altInfo: "Standard NASA outer protective cover for spacecraft interiors, spacesuits, and external payloads.",
+      rating: "SAFE"
+    },
+    gore_tex_ptfe: {
+      name: "Ortho-Fabric (ePTFE / Kevlar / Nomex)",
+      cat: "NASA EMU Spacesuit Outer Layer",
+      ref: "NASA Extravehicular Mobility Unit (EMU) Specification: 3-polymer weave combining Gore-Tex ePTFE, Kevlar, and Nomex.",
+      baseIgnSec: 145.0,
+      baseSpread: 0.14,
+      minO2: 48.0,
+      smokeBase: 7,
+      pyroTemp: "540°C",
+      gases: ["Trace CO₂"],
+      toxSeverity: "MINIMAL (EVA Suit Certified)",
+      toxInfo: "Withstands micrometeoroids, solar radiation, and enriched oxygen cabin environments.",
+      thermalHead: "High-LOI Composite Matrix @ 540°C",
+      thermalInfo: "Combines the high LOI of PTFE with the tear strength of Kevlar.",
+      altTitle: "Approved EVA & Cabin Liner",
+      altInfo: "Ideal for high-wear crew compartments and lunar airlock curtains.",
+      rating: "SAFE"
+    },
+    al_2219: {
+      name: "Aluminum Alloy 2219-T87",
+      cat: "ISS Hull & Structural Racks",
+      ref: "NASA-STD-6001 Test 17 (Metal Flammability in Oxygen) & ISS Destiny Module Hull Alloy.",
+      baseIgnSec: 250.0,
+      baseSpread: 0.02,
+      minO2: 80.0,
+      smokeBase: 2,
+      pyroTemp: "660°C (Melting)",
+      gases: ["None (Solid Al₂O₃ Oxide Ash if >80% O₂)"],
+      toxSeverity: "ZERO TOXIC GAS IN CABIN AIR",
+      toxInfo: "Completely non-flammable in all crewed atmospheres (21%–34% O₂); only thin foils ignite in >80% high-pressure O₂.",
+      thermalHead: "High Thermal Conductivity Sink @ 660°C",
+      thermalInfo: "Rapidly conducts heat away from local ignition sources, acting as a natural thermal arrestor.",
+      altTitle: "Benchmark Structural Spacecraft Metal",
+      altInfo: "Primary structural replacement for any combustible wood, plastic, or composite cabin fixtures.",
+      rating: "SAFE"
+    }
+  };
+
+  let currentSpread = 2.1;
+  let currentAir = 15;
+  let currentO2 = 21;
+  let currentGrav = 0.0;
+  let currentSmoke = 72;
+  let currentThick = 2.5;
+  let currentFlowDir = "concurrent";
+  let hvacCut = false;
+  let coolFlameSeconds = 0;
+  let coolTimerInterval = null;
+
+  function startCoolFlameCountdown() {
+    clearInterval(coolTimerInterval);
+    coolFlameSeconds = 60;
+    const banner = document.getElementById("coolFlameBanner");
+    const timerSpan = document.getElementById("coolFlameTimer");
+    const textSpan = document.getElementById("coolFlameText");
+    banner.classList.add("show");
+    textSpan.textContent = "⚠️ NASA ScienceCasts Cool-Flame State (~300°C Invisible Pyrolysis): Wait before restoring O₂!";
+    timerSpan.textContent = coolFlameSeconds + "s";
+
+    coolTimerInterval = setInterval(() => {
+      coolFlameSeconds--;
+      if (coolFlameSeconds <= 0) {
+        clearInterval(coolTimerInterval);
+        coolFlameSeconds = 0;
+        textSpan.textContent = "✅ Thermal Cooldown Complete (<100°C): Cool flame fully extinguished. Safe to restore HVAC.";
+        timerSpan.textContent = "SAFE";
+        analyzeMaterial();
+      } else {
+        timerSpan.textContent = coolFlameSeconds + "s";
+      }
+    }, 1000);
+  }
+
+  function stopCoolFlameCountdown() {
+    clearInterval(coolTimerInterval);
+    coolFlameSeconds = 0;
+    document.getElementById("coolFlameBanner").classList.remove("show");
+  }
+
+  function onManualAirChange() {
+    const val = parseFloat(document.getElementById("airSlider").value);
+    const btn = document.getElementById("suppressBtn");
+    if (val === 0) {
+      hvacCut = true;
+      btn.textContent = "AEROFLAME HVAC SEALED (0 cm/s): 0g FLAME STARVED & COOL-FLAME GUARD ACTIVE (CLICK TO RESTORE)";
+      btn.classList.add("active");
+      if (currentGrav === 0.0) startCoolFlameCountdown();
+    } else {
+      hvacCut = false;
+      btn.textContent = "ACTIVATE AEROFLAME SMART H-BRIDGE HVAC CUTOFF (0 cm/s)";
+      btn.classList.remove("active");
+      stopCoolFlameCountdown();
+    }
+    analyzeMaterial();
+  }
+
+  function setScenario(type) {
+    hvacCut = false;
+    stopCoolFlameCountdown();
+    document.getElementById("suppressBtn").classList.remove("active");
+    document.getElementById("suppressBtn").textContent = "ACTIVATE AEROFLAME SMART H-BRIDGE HVAC CUTOFF (0 cm/s)";
+    document.getElementById("dustSlider").value = 10;
+    document.getElementById("thickSlider").value = 2.5;
+    document.getElementById("flowDirSelect").value = "concurrent";
+
+    if (type === 'saffire') {
+      document.getElementById("matSelect").value = "sibal";
+      document.getElementById("gravSelect").value = "0.0";
+      document.getElementById("o2Slider").value = 21;
+      document.getElementById("pressSlider").value = 14.7;
+      document.getElementById("airSlider").value = 20;
+      document.getElementById("thickSlider").value = 1.0;
+    } else if (type === 'sofie') {
+      document.getElementById("matSelect").value = "pmma_cast";
+      document.getElementById("gravSelect").value = "0.0";
+      document.getElementById("o2Slider").value = 21;
+      document.getElementById("pressSlider").value = 14.7;
+      document.getElementById("airSlider").value = 15;
+      document.getElementById("thickSlider").value = 5.0;
+    } else if (type === 'cfm_candle') {
+      document.getElementById("matSelect").value = "paraffin_wax";
+      document.getElementById("gravSelect").value = "0.0";
+      document.getElementById("o2Slider").value = 21;
+      document.getElementById("pressSlider").value = 14.7;
+      document.getElementById("airSlider").value = 5;
+    } else if (type === 'dust_test') {
+      document.getElementById("matSelect").value = "nomex_iii";
+      document.getElementById("gravSelect").value = "0.0";
+      document.getElementById("o2Slider").value = 21;
+      document.getElementById("pressSlider").value = 14.7;
+      document.getElementById("airSlider").value = 15;
+      document.getElementById("dustSlider").value = 82;
+    } else if (type === 'artemis') {
+      document.getElementById("matSelect").value = "nomex_iii";
+      document.getElementById("gravSelect").value = "0.16";
+      document.getElementById("o2Slider").value = 34;
+      document.getElementById("pressSlider").value = 8.2;
+      document.getElementById("airSlider").value = 20;
+    } else if (type === 'apollo1') {
+      document.getElementById("matSelect").value = "nylon_velcro";
+      document.getElementById("gravSelect").value = "1.0";
+      document.getElementById("o2Slider").value = 100;
+      document.getElementById("pressSlider").value = 16.7;
+      document.getElementById("airSlider").value = 25;
+      document.getElementById("thickSlider").value = 1.0;
+    } else if (type === 'apollo13') {
+      document.getElementById("matSelect").value = "ptfe_teflon";
+      document.getElementById("gravSelect").value = "0.0";
+      document.getElementById("o2Slider").value = 96;
+      document.getElementById("pressSlider").value = 18.0;
+      document.getElementById("airSlider").value = 35;
+    } else if (type === 'mir') {
+      document.getElementById("matSelect").value = "cotton_100";
+      document.getElementById("gravSelect").value = "0.0";
+      document.getElementById("o2Slider").value = 45;
+      document.getElementById("pressSlider").value = 14.7;
+      document.getElementById("airSlider").value = 40;
+    } else if (type === 'ultem_safe') {
+      document.getElementById("matSelect").value = "ultem_9085";
+      document.getElementById("gravSelect").value = "0.0";
+      document.getElementById("o2Slider").value = 34;
+      document.getElementById("pressSlider").value = 10.2;
+      document.getElementById("airSlider").value = 15;
+    }
+    analyzeMaterial();
+  }
+
+  function toggleHVAC() {
+    hvacCut = !hvacCut;
+    const btn = document.getElementById("suppressBtn");
+    if (hvacCut) {
+      document.getElementById("airSlider").value = 0;
+      btn.textContent = "AEROFLAME HVAC SEALED (0 cm/s): 0g FLAME STARVED & COOL-FLAME GUARD ACTIVE (CLICK TO RESTORE)";
+      btn.classList.add("active");
+      if (parseFloat(document.getElementById("gravSelect").value) === 0.0) {
+        startCoolFlameCountdown();
+      }
+    } else {
+      document.getElementById("airSlider").value = 15;
+      btn.textContent = "ACTIVATE AEROFLAME SMART H-BRIDGE HVAC CUTOFF (0 cm/s)";
+      btn.classList.remove("active");
+      stopCoolFlameCountdown();
+    }
+    analyzeMaterial();
+  }
+
+  function analyzeMaterial() {
+    const key = document.getElementById("matSelect").value;
+    const mat = materials[key];
+    currentGrav = parseFloat(document.getElementById("gravSelect").value);
+    currentO2 = parseFloat(document.getElementById("o2Slider").value);
+    const press = parseFloat(document.getElementById("pressSlider").value);
+    currentAir = parseFloat(document.getElementById("airSlider").value);
+    currentThick = parseFloat(document.getElementById("thickSlider").value);
+    currentFlowDir = document.getElementById("flowDirSelect").value;
+    const dustLevel = parseInt(document.getElementById("dustSlider").value);
+
+    const thickType = currentThick <= 1.5 ? "Thermally Thin" : (currentThick >= 6.0 ? "Thermally Thick" : "Intermediate");
+    document.getElementById("thickVal").textContent = `${currentThick.toFixed(1)} mm (${thickType})`;
+    document.getElementById("dustVal").textContent = `${dustLevel}% ${dustLevel >= 50 ? '(High Dust)' : '(Clean)'}`;
+    document.getElementById("o2Val").textContent = currentO2 + "%";
+    document.getElementById("pressVal").textContent = press.toFixed(1) + " psi";
+    document.getElementById("airVal").textContent = currentAir + " cm/s";
+    document.getElementById("gravTag").textContent = currentGrav.toFixed(2) + "g ENVIRONMENT";
+
+    document.getElementById("refTitle").textContent = `${mat.name} — [${mat.cat}]`;
+    document.getElementById("refText").textContent = mat.ref;
+    document.getElementById("loiBadge").textContent = mat.minO2.toFixed(1) + "% O₂";
+    document.getElementById("hudLOI").textContent = `LOI Threshold: ${mat.minO2.toFixed(1)}% O₂`;
+    document.getElementById("hudThick").textContent = `Sample: ${currentThick.toFixed(1)} mm (${thickType})`;
+
+    // Physics Multipliers
+    const o2Factor = Math.pow(currentO2 / 21, 1.8);
+    const pressFactor = Math.pow(press / 14.7, 0.45);
+    const thickSpreadFactor = Math.pow(2.5 / currentThick, 0.42);
+    const thickIgnFactor = Math.pow(currentThick / 2.5, 0.55);
+    const dirFactor = currentFlowDir === "concurrent" ? 1.18 : 0.76;
+
+    const airFactor = currentGrav === 0.0
+      ? (currentAir === 0 ? 0.02 : (0.4 + (currentAir / 22)) * dirFactor)
+      : ((0.8 + (currentAir / 35)) * dirFactor);
+
+    const belowLOI = currentO2 < mat.minO2;
+
+    // 1. Ignition Time
+    const ignSeconds = Math.max(0.8, (mat.baseIgnSec * thickIgnFactor) / (o2Factor * pressFactor));
+    const ignEl = document.getElementById("ignTimeVal");
+    const ignDescEl = document.getElementById("ignTimeDesc");
+
+    if (belowLOI) {
+      ignEl.textContent = "No Sustained Ignition";
+      ignDescEl.textContent = `Cabin O₂ (${currentO2}%) is below ${mat.name}'s Limiting Oxygen Index (${mat.minO2}%). Material self-extinguishes per NASA-STD-6001 Test 1.`;
+    } else if (currentGrav === 0.0 && currentAir === 0) {
+      ignEl.textContent = "Starved by 0 cm/s Flow";
+      ignDescEl.textContent = "With HVAC airflow cut to 0 cm/s in microgravity, combustion products surround the ignition zone and block fresh oxygen.";
+    } else {
+      ignEl.textContent = ignSeconds.toFixed(1) + " Seconds";
+      ignDescEl.textContent = ignSeconds < 12
+        ? `RAPID IGNITION (${currentThick.toFixed(1)}mm ${thickType}): Ignites in ${ignSeconds.toFixed(1)}s at ${currentO2}% O₂.`
+        : `DELAYED IGNITION (${currentThick.toFixed(1)}mm ${thickType}): High thermal mass requires ${ignSeconds.toFixed(1)}s of heat flux (${mat.pyroTemp}) to ignite.`;
+    }
+
+    // 2. Flame Propagation
+    currentSpread = belowLOI ? 0.0 : mat.baseSpread * o2Factor * pressFactor * airFactor * thickSpreadFactor;
+    const propEl = document.getElementById("propRateVal");
+    const propDescEl = document.getElementById("propDesc");
+
+    if (currentSpread < 0.20) {
+      propEl.textContent = currentSpread.toFixed(2) + " mm/s (Self-Extinguishing)";
+      propDescEl.textContent = belowLOI
+        ? `Meets NASA-STD-6001 criteria: flame cannot propagate at ${currentO2}% O₂.`
+        : "0g Oxygen Starvation: Hot flame extinguished into a ~300°C cool-flame zone surrounded by a suffocating CO₂ shell.";
+    } else {
+      propEl.textContent = `${currentSpread.toFixed(2)} mm/s (${currentFlowDir === 'concurrent' ? 'Concurrent' : 'Opposed'})`;
+      propDescEl.textContent = currentGrav === 0.0
+        ? `0g ${currentFlowDir.toUpperCase()} Flow: Spherical blue flame pushed ${currentFlowDir === 'concurrent' ? 'ahead across' : 'against'} the ${currentThick.toFixed(1)}mm surface at ${currentAir} cm/s.`
+        : `Buoyant Gravity Mode (${currentGrav}g): Rising thermal plume accelerates upward flame propagation.`;
+    }
+
+    // 3. Suitability & Fire Probability
+    const rawProb = Math.min(99, Math.max(3, Math.round((currentSpread / 4.0) * 82 + (currentO2 - mat.minO2) * 1.1)));
+    const prob = (belowLOI || currentSpread < 0.20) ? 4 : rawProb;
+
+    const suitEl = document.getElementById("suitabilityBadge");
+    const probEl = document.getElementById("probValue");
+    const hazEl = document.getElementById("hazardClass");
+    const barEl = document.getElementById("probBar");
+
+    probEl.textContent = prob + "%";
+    barEl.style.width = prob + "%";
+
+    if (prob < 25) {
+      suitEl.textContent = "APPROVED (PASS)";
+      suitEl.style.color = "var(--green)";
+      hazEl.textContent = "LOW / SAFE";
+      hazEl.style.color = "var(--green)";
+      probEl.style.color = "var(--green)";
+      barEl.style.background = "var(--green)";
+    } else if (prob < 58) {
+      suitEl.textContent = "CONDITIONAL";
+      suitEl.style.color = "var(--amber)";
+      hazEl.textContent = "MODERATE RISK";
+      hazEl.style.color = "var(--amber)";
+      probEl.style.color = "var(--amber)";
+      barEl.style.background = "var(--amber)";
+    } else {
+      suitEl.textContent = "REJECTED (FAIL)";
+      suitEl.style.color = "var(--red)";
+      hazEl.textContent = "CRITICAL HAZARD";
+      hazEl.style.color = "var(--red)";
+      probEl.style.color = "var(--red)";
+      barEl.style.background = "var(--red)";
+    }
+
+    // 4. Smoke Production
+    currentSmoke = currentSpread < 0.20 ? Math.round(mat.smokeBase * 0.1) : Math.min(99, Math.round(mat.smokeBase * (currentGrav === 0.0 ? 1.15 : 0.95)));
+    const smokeEl = document.getElementById("smokeVal");
+    const smokeDescEl = document.getElementById("smokeDesc");
+
+    if (key === "delrin_pom" && currentSpread >= 0.20) {
+      smokeEl.textContent = "LOW SOOT (Invisible Flame!)";
+      smokeEl.style.color = "var(--amber)";
+      smokeDescEl.textContent = "WARNING (NASA BASS Finding): Delrin burns with zero black soot and a nearly invisible blue flame, requiring thermal + gas sensors!";
+    } else if (currentSmoke > 60) {
+      smokeEl.textContent = `HIGH (${currentSmoke}% Obscuration)`;
+      smokeEl.style.color = "var(--red)";
+      smokeDescEl.textContent = `Dense non-settling soot cloud in ${currentGrav}g blinds crew visibility and triggers Shuttle Photoelectric Smoke Detector.`;
+    } else if (currentSmoke > 25) {
+      smokeEl.textContent = `MODERATE (${currentSmoke}% Obscuration)`;
+      smokeEl.style.color = "var(--amber)";
+      smokeDescEl.textContent = "Moderate aerosol emission; requires active HEPA/charcoal filtration after fire suppression.";
+    } else {
+      smokeEl.textContent = `LOW (${currentSmoke}% Obscuration)`;
+      smokeEl.style.color = "var(--green)";
+      smokeDescEl.textContent = "Minimal particulate generation; optical cabin visibility remains clear for astronaut response.";
+    }
+
+    // 5. Toxic Gas Emissions
+    document.getElementById("toxLevelVal").textContent = mat.toxSeverity;
+    document.getElementById("toxDesc").textContent = mat.toxInfo;
+    const tagsContainer = document.getElementById("gasTags");
+    tagsContainer.innerHTML = "";
+    mat.gases.forEach(g => {
+      const span = document.createElement("span");
+      span.className = "gas-tag";
+      span.textContent = g;
+      tagsContainer.appendChild(span);
+    });
+
+    // 6. Thermal Behavior & 7. Safer Alternatives
+    document.getElementById("thermalVal").textContent = mat.thermalHead;
+    document.getElementById("thermalDesc").textContent = mat.thermalInfo;
+    document.getElementById("altTitleVal").textContent = mat.altTitle;
+    document.getElementById("altDesc").textContent = mat.altInfo;
+
+    // Shuttle Smoke Discriminator & Fireman SCBA Air Tank Logic
+    const shuttleEl = document.getElementById("shuttleDetText");
+    const tankEl = document.getElementById("airTankText");
+    const flameTempHud = document.getElementById("hudFlameTemp");
+
+    if (currentSpread >= 0.20) {
+      shuttleEl.innerHTML = `<span style="color:var(--red); font-weight:bold;">FIRE ALARM VERIFIED:</span> High thermal flux + combustion soot discriminated from dust. Triggering H-Bridge cutoff!`;
+      const scbaMinutes = Math.max(0.8, (6.5 / (currentSpread + 0.5))).toFixed(1);
+      tankEl.innerHTML = `<span style="color:var(--amber); font-weight:bold;">DON SCBA MASKS IN ${scbaMinutes} MIN:</span> 45-min NASA Spinoff composite air tanks required against ${mat.gases[0]}.`;
+      flameTempHud.textContent = key === "paraffin_wax" && currentAir < 8
+        ? "Flame State: 0g Blue Cool Flame (~300°C)"
+        : "Flame State: Hot Visible Flame (~1100°C)";
+    } else if (dustLevel >= 50) {
+      shuttleEl.innerHTML = `<span style="color:var(--green); font-weight:bold;">FALSE ALARM PREVENTED:</span> High cabin dust (${dustLevel}%) with normal temp. HVAC kept ON per Shuttle Detector logic!`;
+      tankEl.textContent = "Cabin O₂ Breathable: No toxic pyrolysis gases detected. HEPA dust filter active.";
+      flameTempHud.textContent = "Flame State: No Ignition (Dust Only)";
+    } else if (currentGrav === 0.0 && currentAir === 0 && !belowLOI && coolFlameSeconds > 0) {
+      shuttleEl.innerHTML = `<span style="color:var(--purple); font-weight:bold;">COOL-FLAME MONITOR:</span> Hot flame starved; monitoring invisible ~300°C cool-flame CO emission.`;
+      tankEl.textContent = `Keep SCBA Masks ON for ${coolFlameSeconds}s until sample cools below pyrolysis temperature.`;
+      flameTempHud.textContent = `Flame State: 0g Cool Flame (~300°C | ${coolFlameSeconds}s left)`;
+    } else {
+      shuttleEl.textContent = "Nominal Cabin Optical Path: Background dust low, zero combustion soot detected.";
+      tankEl.textContent = "Cabin Atmosphere Nominal: Crew SCBA air tanks on standby (3000 psi full).";
+      flameTempHud.textContent = "Flame State: Extinguished / Safe (<40°C)";
+    }
+
+    // HUD
+    document.getElementById("hudShape").textContent = currentGrav === 0.0
+      ? "Flame Geometry: 0g Spherical Microgravity Front"
+      : `Flame Geometry: Buoyant Plume (${currentGrav}g)`;
+    document.getElementById("hudAir").textContent = currentAir === 0
+      ? "HVAC O₂ Flow: 0 cm/s (STARVED)"
+      : `HVAC O₂ Flow: ${currentAir} cm/s (${currentFlowDir})`;
+  }
+
+  // Render Interactive 22-Material Table
+  function renderTable() {
+    const query = document.getElementById("tableSearch").value.toLowerCase();
+    const tbody = document.getElementById("matTableBody");
+    tbody.innerHTML = "";
+
+    Object.keys(materials).forEach(key => {
+      const m = materials[key];
+      const searchStr = `${m.name} ${m.cat} ${m.gases.join(" ")} ${m.rating}`.toLowerCase();
+      if (!searchStr.includes(query)) return;
+
+      const tr = document.createElement("tr");
+      tr.className = "mat-row";
+      tr.onclick = () => {
+        document.getElementById("matSelect").value = key;
+        analyzeMaterial();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+
+      const pillClass = m.rating === "SAFE" ? "pill-safe" : (m.rating === "MODERATE" ? "pill-mod" : "pill-high");
+
+      tr.innerHTML = `
+        <td><strong>${m.name}</strong></td>
+        <td>${m.cat}</td>
+        <td style="font-family:monospace; color:var(--cyan);">${m.minO2.toFixed(1)}% O₂</td>
+        <td style="font-family:monospace;">${m.baseSpread.toFixed(2)} mm/s</td>
+        <td style="font-family:monospace;">${m.pyroTemp}</td>
+        <td>${m.gases.slice(0, 2).join(", ")}</td>
+        <td><span class="pill ${pillClass}">${m.rating}</span></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Canvas Visualizer
+  const canvas = document.getElementById("flameCanvas");
+  const ctx = canvas.getContext("2d");
+  const airDots = Array.from({ length: 40 }, () => ({
+    x: Math.random() * 620,
+    y: Math.random() * 220,
+    r: Math.random() * 2 + 1
+  }));
+
+  function renderCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const dustLevel = parseInt(document.getElementById("dustSlider").value);
+    const dirSign = currentFlowDir === "concurrent" ? 1 : -1;
+
+    // Airflow & Dust particles
+    ctx.fillStyle = dustLevel >= 50 ? "rgba(245, 158, 11, 0.45)" : "rgba(56, 189, 248, 0.32)";
+    airDots.forEach(p => {
+      p.x += dirSign * (currentAir * 0.14);
+      if (p.x > canvas.width) p.x = 0;
+      if (p.x < 0) p.x = canvas.width;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, dustLevel >= 50 ? p.r * 1.35 : p.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // Draw Material Sample Rod (Thickness scales dynamically with slider)
+    const matKey = document.getElementById("matSelect").value;
+    const rodHeight = Math.min(34, Math.max(6, Math.round(currentThick * 2.4)));
+    const rodY = 118 - Math.round(rodHeight / 2);
+
+    ctx.fillStyle = matKey === "birch_wood" ? "#854d0e" : (matKey === "kapton_hn" ? "#d97706" : "#334155");
+    ctx.fillRect(210, rodY, 195, rodHeight);
+    ctx.fillStyle = "#cbd5e1";
+    ctx.font = "11px monospace";
+    ctx.fillText(`${materials[matKey].name.toUpperCase()} [${currentThick.toFixed(1)}mm]`, 195, rodY + rodHeight + 18);
+
+    // Smoke Cloud
+    if (currentSpread > 0.20 && currentSmoke > 12) {
+      const smokeR = Math.min(110, currentSmoke * 0.9);
+      const smX = 295 + dirSign * (currentAir * 0.55);
+      const smGrad = ctx.createRadialGradient(smX, 95, 10, smX, 95, smokeR);
+      smGrad.addColorStop(0, `rgba(100, 116, 139, ${currentSmoke / 175})`);
+      smGrad.addColorStop(1, "rgba(15, 23, 42, 0)");
+      ctx.beginPath();
+      ctx.arc(smX, 95, smokeR, 0, Math.PI * 2);
+      ctx.fillStyle = smGrad;
+      ctx.fill();
+    }
+
+    // Cool-Flame Glowing Halo (when 0g HVAC is cut to 0 cm/s during 60s cooldown)
+    if (currentGrav === 0.0 && currentAir === 0 && coolFlameSeconds > 0 && currentO2 >= materials[matKey].minO2) {
+      const coolPulse = 28 + Math.sin(Date.now() * 0.01) * 5;
+      const cGrad = ctx.createRadialGradient(255, 118, 4, 255, 118, coolPulse);
+      cGrad.addColorStop(0, "rgba(168, 85, 247, 0.55)");
+      cGrad.addColorStop(0.5, "rgba(56, 189, 248, 0.35)");
+      cGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.beginPath();
+      ctx.arc(255, 118, coolPulse, 0, Math.PI * 2);
+      ctx.fillStyle = cGrad;
+      ctx.fill();
+    }
+
+    // Active Flame
+    if (currentSpread > 0.15) {
+      const baseR = Math.min(82, Math.max(10, currentSpread * 14));
+      const flicker = Math.sin(Date.now() * 0.018) * 3;
+      const rad = baseR + flicker;
+      const cx = (currentFlowDir === "concurrent" ? 245 : 350) + dirSign * (currentAir * 0.4);
+      const cy = 118;
+
+      const grad = ctx.createRadialGradient(cx, cy, 2, cx, cy, rad);
+      if (matKey === "delrin_pom") {
+        grad.addColorStop(0, "rgba(224, 242, 254, 0.55)");
+        grad.addColorStop(0.5, "rgba(56, 189, 248, 0.28)");
+        grad.addColorStop(1, "rgba(0,0,0,0)");
+      } else if (currentGrav === 0.0) {
+        grad.addColorStop(0, "#ffffff");
+        grad.addColorStop(0.35, currentO2 > 32 ? "#fde047" : "#38bdf8");
+        grad.addColorStop(0.75, "rgba(37, 99, 235, 0.6)");
+        grad.addColorStop(1, "rgba(0,0,0,0)");
+      } else {
+        grad.addColorStop(0, "#ffffff");
+        grad.addColorStop(0.3, "#fbbf24");
+        grad.addColorStop(0.7, "rgba(239, 68, 68, 0.75)");
+        grad.addColorStop(1, "rgba(0,0,0,0)");
+      }
+
+      if (currentGrav === 0.0) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      } else {
+        ctx.save();
+        ctx.translate(cx, cy - rad * 0.4);
+        ctx.scale(0.72, 1.35);
+        ctx.beginPath();
+        ctx.arc(0, 0, rad, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    requestAnimationFrame(renderCanvas);
+  }
+
+  analyzeMaterial();
+  renderTable();
+  renderCanvas();
+
+  // Multilingual interface and incident reporting (EN / AR / FR)
+  const aeroText = {
+    en: {
+      reportHeading:"MISSION INCIDENT REPORT", generate:"Generate incident report", crew:"Astronaut / crew status", zone:"Affected zone", event:"Event status",
+      crewAbsent:"No astronaut in the affected zone", crewPresent:"Astronaut present", crewUnknown:"Crew status unknown",
+      eventDetected:"Fire signal detected", eventFalse:"Dust / false alarm scenario", eventNormal:"Normal monitoring",
+      reportReady:"Ready to generate", reportHint:"Choose the crew status and event details, then generate a concise mission report. The report uses the current simulator readings.",
+      disclaimer:"Simulation-generated report. It is not a flight-certified safety assessment or a substitute for approved spacecraft procedures.",
+      hardwareHeading:"HARDWARE SYSTEM — HOW IT WORKS", videoBadge:"VIDEO WALKTHROUGH · 32 SEC",
+      videoCaption:"The supplied clip compares a simulated correct response with a fan-fault case.",
+      hw1:"01 · Sensor layer", hw1d:"Temperature and atmosphere readings are monitored by zone. A fire indicator is treated as an event signal that needs confirmation.",
+      hw2:"02 · Controller", hw2d:"The controller receives sensor states, checks the affected zone, and coordinates the response logic shown in the simulation.",
+      hw3:"03 · Isolation status", hw3d:"The clip illustrates a zone boundary and door-state change to represent separating the affected area from the rest of the cabin.",
+      hw4:"04 · Airflow / fan feedback", hw4d:"Fan status is monitored. The comparison highlights that a fan fault can make the simulated event trend worse than the intended response.",
+      hw5:"05 · Crew-independent reporting", hw5d:"If no astronaut is in the affected zone, the dashboard records the event, system states, and whether automatic monitoring reports a fault. It does not assume a human has acknowledged the alarm.",
+      hwDisclaimer:"Hardware explanation is based on what is visible in your supplied animation. It does not identify exact physical components, wiring, or a verified flight design.",
+      summary:"Incident summary", crewStatus:"Crew status", absent:"No astronaut in affected zone", present:"Astronaut present", unknown:"Unknown",
+      zoneName:"Affected zone", material:"Selected material", oxygen:"Cabin oxygen", temperature:"Temperature / thermal state", spread:"Simulated spread index", risk:"Simulator risk classification",
+      system:"System observation", action:"Autonomous monitoring record", absentNote:"No astronaut is recorded in the affected zone. The report therefore documents the automated monitoring state without claiming that a crew member inspected or acknowledged the event.",
+      presentNote:"An astronaut is recorded as present. This report only summarizes simulator telemetry; it does not prescribe crew actions.",
+      unknownNote:"Crew presence is unknown. The dashboard cannot confirm whether a person is available to acknowledge the event.",
+      detected:"A fire-related signal is selected. Review sensor agreement and system status; the values below are simulator outputs, not live hardware measurements.",
+      falseAlarm:"A dust / false-alarm scenario is selected. The report records the selected scenario and does not classify dust as a confirmed fire.",
+      normal:"Normal monitoring is selected. No incident is asserted by this report.",
+      fan:"The supplied video contrasts the intended simulated response with a fan-fault case. In the fault case, the fan indicators remain active and the displayed fire trend rises relative to the comparison case.",
+      timestamp:"Report generated", save:"Print / Save PDF", noData:"Not available", reportFoot:"End of simulated report"
+    },
+    ar: {
+      reportHeading:"تقرير حادث المهمة", generate:"إنشاء تقرير الحادث", crew:"حالة رائد الفضاء / الطاقم", zone:"المنطقة المتأثرة", event:"حالة الحدث",
+      crewAbsent:"لا يوجد رائد فضاء في المنطقة المتأثرة", crewPresent:"يوجد رائد فضاء", crewUnknown:"حالة الطاقم غير معروفة",
+      eventDetected:"تم رصد إشارة حريق", eventFalse:"سيناريو غبار / إنذار كاذب", eventNormal:"مراقبة طبيعية",
+      reportReady:"جاهز لإنشاء التقرير", reportHint:"حدد حالة الطاقم وتفاصيل الحدث، ثم أنشئ تقريراً مختصراً. سيستخدم التقرير القراءات الحالية للمحاكاة.",
+      disclaimer:"هذا تقرير مولّد من محاكاة تعليمية، وليس تقييماً معتمداً لسلامة مركبة فضائية أو بديلاً عن إجراءات التشغيل المعتمدة.",
+      hardwareHeading:"نظام الأجهزة — كيف يعمل؟", videoBadge:"شرح بالفيديو · ٣٢ ثانية",
+      videoCaption:"يقارن الفيديو المرفق بين استجابة محاكاة صحيحة وحالة تعطل المراوح.",
+      hw1:"٠١ · طبقة الحساسات", hw1d:"تتم متابعة قراءات الحرارة والجو داخل كل منطقة. وتُعامل إشارة الحريق كحدث يحتاج إلى التحقق من الحساسات.",
+      hw2:"٠٢ · وحدة التحكم", hw2d:"تستقبل وحدة التحكم حالات الحساسات، وتحدد المنطقة المتأثرة، وتنسق منطق الاستجابة الظاهر في المحاكاة.",
+      hw3:"٠٣ · حالة العزل", hw3d:"يوضح الفيديو حدود المنطقة وتغير حالة الباب لتمثيل فصل المنطقة المتأثرة عن بقية المقصورة.",
+      hw4:"٠٤ · متابعة تدفق الهواء والمراوح", hw4d:"تتم متابعة حالة المراوح. وتوضح المقارنة أن تعطل المروحة قد يجعل اتجاه الحدث في المحاكاة أسوأ من الاستجابة المقصودة.",
+      hw5:"٠٥ · تسجيل الحدث دون وجود الطاقم", hw5d:"إذا لم يوجد رائد فضاء في المنطقة المتأثرة، تسجل لوحة المتابعة الحدث وحالات النظام وأي عطل ترصده المراقبة الآلية، دون افتراض أن شخصاً أكد الإنذار.",
+      hwDisclaimer:"يعتمد شرح الأجهزة على العناصر الظاهرة في الفيديو المرفق فقط. ولا يحدد مكونات فعلية أو توصيلات كهربائية أو تصميماً فضائياً معتمداً.",
+      summary:"ملخص الحادث", crewStatus:"حالة الطاقم", absent:"لا يوجد رائد فضاء في المنطقة", present:"يوجد رائد فضاء", unknown:"غير معروفة",
+      zoneName:"المنطقة المتأثرة", material:"المادة المختارة", oxygen:"أكسجين المقصورة", temperature:"الحالة الحرارية", spread:"مؤشر الانتشار في المحاكاة", risk:"تصنيف الخطورة في المحاكاة",
+      system:"ملاحظة النظام", action:"سجل المراقبة الآلية", absentNote:"لا يوجد رائد فضاء مسجل في المنطقة المتأثرة. لذلك يوثق التقرير حالة المراقبة الآلية دون الادعاء بأن أحد أفراد الطاقم فحص الحدث أو أكد الإنذار.",
+      presentNote:"يوجد رائد فضاء مسجل في المنطقة. يلخص التقرير بيانات المحاكاة فقط ولا يقدم تعليمات للتصرف.",
+      unknownNote:"حالة وجود الطاقم غير معروفة. لا تستطيع اللوحة تأكيد وجود شخص يمكنه تأكيد الإنذار.",
+      detected:"تم اختيار إشارة مرتبطة بحريق. يجب قراءة توافق الحساسات وحالة النظام؛ القيم التالية ناتجة عن المحاكاة وليست قياسات مباشرة من أجهزة حقيقية.",
+      falseAlarm:"تم اختيار سيناريو الغبار / الإنذار الكاذب. يسجل التقرير السيناريو المختار ولا يصنف الغبار على أنه حريق مؤكد.",
+      normal:"تم اختيار المراقبة الطبيعية. لا يفترض هذا التقرير وقوع حادث.",
+      fan:"يقارن الفيديو بين الاستجابة المقصودة في المحاكاة وحالة تعطل المراوح. في حالة العطل تظل مؤشرات المراوح نشطة ويزداد اتجاه الحريق المعروض مقارنة بحالة المقارنة.",
+      timestamp:"وقت إنشاء التقرير", save:"طباعة / حفظ PDF", noData:"غير متاح", reportFoot:"نهاية التقرير — محاكاة تعليمية"
+    },
+    fr: {
+      reportHeading:"RAPPORT D’INCIDENT DE MISSION", generate:"Générer le rapport", crew:"État de l’astronaute / équipage", zone:"Zone concernée", event:"État de l’événement",
+      crewAbsent:"Aucun astronaute dans la zone concernée", crewPresent:"Astronaute présent", crewUnknown:"État de l’équipage inconnu",
+      eventDetected:"Signal d’incendie détecté", eventFalse:"Scénario poussière / fausse alerte", eventNormal:"Surveillance normale",
+      reportReady:"Prêt à générer", reportHint:"Choisissez l’état de l’équipage et les détails de l’événement, puis générez un rapport. Il utilisera les valeurs actuelles du simulateur.",
+      disclaimer:"Rapport généré par simulation. Il ne constitue pas une évaluation certifiée pour le vol et ne remplace pas les procédures approuvées.",
+      hardwareHeading:"SYSTÈME MATÉRIEL — FONCTIONNEMENT", videoBadge:"VIDÉO EXPLICATIVE · 32 S",
+      videoCaption:"La vidéo fournie compare une réponse simulée correcte à un scénario de panne des ventilateurs.",
+      hw1:"01 · Couche de capteurs", hw1d:"Les mesures de température et d’atmosphère sont surveillées par zone. Un indicateur d’incendie est traité comme un signal à confirmer.",
+      hw2:"02 · Contrôleur", hw2d:"Le contrôleur reçoit l’état des capteurs, identifie la zone concernée et coordonne la logique présentée dans la simulation.",
+      hw3:"03 · État d’isolement", hw3d:"La vidéo montre une limite de zone et un changement d’état de porte pour illustrer la séparation de la zone concernée.",
+      hw4:"04 · Retour des ventilateurs", hw4d:"L’état des ventilateurs est surveillé. La comparaison montre qu’une panne peut aggraver la tendance simulée par rapport à la réponse prévue.",
+      hw5:"05 · Rapport sans présence humaine", hw5d:"Si aucun astronaute n’est présent dans la zone, le tableau de bord consigne l’événement, l’état du système et les défauts détectés automatiquement, sans supposer qu’une personne a confirmé l’alarme.",
+      hwDisclaimer:"Cette explication repose uniquement sur les éléments visibles dans votre vidéo. Elle ne confirme ni les composants réels, ni le câblage, ni une conception spatiale certifiée.",
+      summary:"Résumé de l’incident", crewStatus:"État de l’équipage", absent:"Aucun astronaute dans la zone", present:"Astronaute présent", unknown:"Inconnu",
+      zoneName:"Zone concernée", material:"Matériau sélectionné", oxygen:"Oxygène de la cabine", temperature:"État thermique", spread:"Indice de propagation simulé", risk:"Niveau de risque simulé",
+      system:"Observation du système", action:"Journal de surveillance automatique", absentNote:"Aucun astronaute n’est enregistré dans la zone concernée. Le rapport décrit donc l’état de la surveillance automatique sans prétendre qu’un membre d’équipage a inspecté ou confirmé l’alarme.",
+      presentNote:"Un astronaute est enregistré comme présent. Ce rapport résume uniquement les données simulées et ne donne pas de consignes d’intervention.",
+      unknownNote:"La présence de l’équipage est inconnue. Le tableau de bord ne peut pas confirmer qu’une personne peut accuser réception de l’alarme.",
+      detected:"Un signal lié à un incendie est sélectionné. Les valeurs ci-dessous proviennent du simulateur et ne sont pas des mesures matérielles en temps réel.",
+      falseAlarm:"Un scénario de poussière / fausse alerte est sélectionné. Le rapport consigne ce scénario sans déclarer qu’un incendie est confirmé.",
+      normal:"La surveillance normale est sélectionnée. Ce rapport ne présume aucun incident.",
+      fan:"La vidéo compare la réponse simulée prévue à une panne des ventilateurs. Dans le scénario de panne, les indicateurs restent actifs et la tendance d’incendie affichée augmente par rapport au scénario comparatif.",
+      timestamp:"Rapport généré", save:"Imprimer / Enregistrer en PDF", noData:"Indisponible", reportFoot:"Fin du rapport — simulation éducative"
+    }
+  };
+  let aeroLang = "en";
+  function setLanguage(lang){
+    aeroLang = lang; const t=aeroText[lang];
+    document.documentElement.lang=lang; document.documentElement.dir=lang==="ar"?"rtl":"ltr";
+    document.querySelectorAll(".language-switch button").forEach(b=>b.classList.toggle("active",b.dataset.lang===lang));
+    const put=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=val};
+    put("reportHeading",t.reportHeading);put("generateReportBtn",t.generate);put("crewLabel",t.crew);put("zoneLabel",t.zone);put("eventLabel",t.event);
+    put("hardwareHeading",t.hardwareHeading);put("videoBadge",t.videoBadge);put("videoCaption",t.videoCaption);
+    ["hw1Title","hw2Title","hw3Title","hw4Title","hw5Title"].forEach((id,i)=>put(id,t["hw"+(i+1)]));
+    ["hw1Text","hw2Text","hw3Text","hw4Text","hw5Text"].forEach((id,i)=>put(id,t["hw"+(i+1)+"d"]));
+    put("hardwareDisclaimer",t.hwDisclaimer);put("reportDisclaimer",t.disclaimer);
+    const crew=document.getElementById("crewStatus");
+    crew.options[0].text=t.crewAbsent;crew.options[1].text=t.crewPresent;crew.options[2].text=t.crewUnknown;
+    const ev=document.getElementById("eventStatus");
+    ev.options[0].text=t.eventDetected;ev.options[1].text=t.eventFalse;ev.options[2].text=t.eventNormal;
+    const ph=document.getElementById("reportPlaceholderTitle");if(ph)ph.textContent=t.reportReady;
+    const pp=document.getElementById("reportPlaceholder");if(pp)pp.textContent=t.reportHint;
+    translateStatic(lang);
+    if(document.getElementById("reportOutput").dataset.generated==="1")generateIncidentReport();
+  }
+  const staticLabels={
+    ar:{
+      "1. Material, Geometry & Cabin Controls":"١. المادة والأبعاد وإعدادات المقصورة",
+      "2. AeroFlame Visualizer & Space Suitability":"٢. محاكي AeroFlame وملاءمة الاستخدام الفضائي",
+      "Select Verified NASA Material (Categorized by Mission/Experiment):":"اختر مادة من قاعدة البيانات",
+      "Gravity Regime:":"مستوى الجاذبية:","HVAC Airflow Mode (ISS Guide):":"وضع تدفق الهواء:","Sample Thickness:":"سُمك العينة:",
+      "Cabin Background Dust:":"الغبار داخل المقصورة:","Cabin Oxygen Concentration (O₂):":"تركيز الأكسجين داخل المقصورة:",
+      "Cabin Pressure:":"ضغط المقصورة:","HVAC Airflow Speed:":"سرعة تدفق الهواء:",
+      "NASA Experiment / Standard Reference:":"مرجع تجربة / معيار NASA:",
+      "NASA Mission & Experiment Presets:":"إعدادات مهام وتجارب NASA:",
+      "AeroFlame // NASA PSI & MAPTIS 22-Material Database (Click Any Row to Simulate)":"قاعدة بيانات المواد — اضغط على أي صف للمحاكاة",
+      "Search material, NASA test, or toxic gas...":"ابحث عن مادة أو اختبار أو غاز...",
+      "Material Name":"اسم المادة","Category / NASA Source":"الفئة / مصدر NASA","LOI (Min O₂%)":"حد الأكسجين الأدنى","Base Spread (0g)":"الانتشار الأساسي","Pyrolysis Temp":"حرارة التحلل الحراري","Primary Toxic Gases":"الغازات الأساسية","ISS (21% O₂) Rating":"التقييم في ISS",
+      "Space Suitability":"ملاءمة الفضاء","Fire Probability":"احتمالية الحريق","Limiting O₂ Index (LOI)":"مؤشر الأكسجين المحدد","Risk Classification":"تصنيف الخطورة",
+      "Ignition Time (وقت الاشتعال)":"وقت الاشتعال","Flame Propagation (انتشار اللهب)":"انتشار اللهب","Smoke Production (إنتاج الدخان)":"إنتاج الدخان",
+      "Toxic Gas Emissions (الغازات السامة)":"انبعاث الغازات","Thermal Behavior (السلوك الحراري)":"السلوك الحراري","Safer NASA Alternative (البديل الآمن)":"بديل أكثر أماناً",
+      "AeroFlame — NASA Open Data & Standards Attribution:":"AeroFlame — مراجع وبيانات NASA:"
+    },
+    fr:{
+      "1. Material, Geometry & Cabin Controls":"1. Matériau, géométrie et cabine",
+      "2. AeroFlame Visualizer & Space Suitability":"2. Visualisation AeroFlame et aptitude spatiale",
+      "Select Verified NASA Material (Categorized by Mission/Experiment):":"Sélectionner un matériau de la base",
+      "Gravity Regime:":"Régime de gravité :","HVAC Airflow Mode (ISS Guide):":"Mode de circulation d’air :","Sample Thickness:":"Épaisseur de l’échantillon :",
+      "Cabin Background Dust:":"Poussière dans la cabine :","Cabin Oxygen Concentration (O₂):":"Concentration d’oxygène (O₂) :",
+      "Cabin Pressure:":"Pression de la cabine :","HVAC Airflow Speed:":"Vitesse du flux d’air :",
+      "NASA Experiment / Standard Reference:":"Référence d’expérience / norme NASA :","NASA Mission & Experiment Presets:":"Scénarios de missions et expériences NASA :",
+      "AeroFlame // NASA PSI & MAPTIS 22-Material Database (Click Any Row to Simulate)":"Base de données des matériaux — sélectionner une ligne",
+      "Search material, NASA test, or toxic gas...":"Rechercher un matériau, un test ou un gaz...",
+      "Material Name":"Nom du matériau","Category / NASA Source":"Catégorie / source NASA","LOI (Min O₂%)":"LOI (O₂ min.)","Base Spread (0g)":"Propagation de base","Pyrolysis Temp":"Température de pyrolyse","Primary Toxic Gases":"Gaz principaux","ISS (21% O₂) Rating":"Évaluation ISS",
+      "Space Suitability":"Aptitude spatiale","Fire Probability":"Probabilité d’incendie","Limiting O₂ Index (LOI)":"Indice limite d’oxygène","Risk Classification":"Classification du risque",
+      "Ignition Time (وقت الاشتعال)":"Temps d’allumage","Flame Propagation (انتشار اللهب)":"Propagation de la flamme","Smoke Production (إنتاج الدخان)":"Production de fumée",
+      "Toxic Gas Emissions (الغازات السامة)":"Émissions de gaz toxiques","Thermal Behavior (السلوك الحراري)":"Comportement thermique","Safer NASA Alternative (البديل الآمن)":"Alternative plus sûre",
+      "AeroFlame — NASA Open Data & Standards Attribution:":"AeroFlame — Sources et normes NASA :"
+    }
+  };
+  const originalTextNodes = new WeakMap();
+  function translateStatic(lang){
+    const dict=staticLabels[lang]||{};
+    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+    let n;while(n=walker.nextNode()){
+      if(!originalTextNodes.has(n))originalTextNodes.set(n,n.nodeValue);
+      const original=originalTextNodes.get(n), key=original.trim();
+      if(dict[key]) n.nodeValue=original.replace(key,dict[key]);
+      else n.nodeValue=original;
+    }
+    document.querySelectorAll("input[placeholder]").forEach(e=>{
+      if(!e.dataset.originalPlaceholder)e.dataset.originalPlaceholder=e.placeholder;
+      e.placeholder=lang==="ar"&&e.id==="tableSearch"?"ابحث عن مادة أو اختبار أو غاز...":lang==="fr"&&e.id==="tableSearch"?"Rechercher un matériau, un test ou un gaz...":e.dataset.originalPlaceholder;
+    });
+  }
+  function generateIncidentReport(){
+    const t=aeroText[aeroLang],crew=document.getElementById("crewStatus").value,zone=document.getElementById("incidentZone").value,event=document.getElementById("eventStatus").value;
+    const mat=materials[document.getElementById("matSelect").value],o2=document.getElementById("o2Slider").value,air=document.getElementById("airSlider").value;
+    const spread=(typeof currentSpread==="number")?currentSpread.toFixed(2)+" mm/s":t.noData;
+    const crewText=crew==="absent"?t.absent:crew==="present"?t.present:t.unknown;
+    const crewNote=crew==="absent"?t.absentNote:crew==="present"?t.presentNote:t.unknownNote;
+    const eventNote=event==="detected"?t.detected:event==="false_alarm"?t.falseAlarm:t.normal;
+    const risk=document.getElementById("hazardClass")?.textContent||t.noData;
+    const report=document.getElementById("reportOutput");
+    const safe=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    report.dataset.generated="1";
+    report.innerHTML=`<h3>${t.summary}</h3>
+      <div class="report-grid">
+      <div class="report-stat"><small>${t.crewStatus}</small><strong>${safe(crewText)}</strong></div>
+      <div class="report-stat"><small>${t.zoneName}</small><strong>${safe(zone)}</strong></div>
+      <div class="report-stat"><small>${t.risk}</small><strong>${safe(risk)}</strong></div>
+      <div class="report-stat"><small>${t.material}</small><strong>${safe(mat.name)}</strong></div>
+      <div class="report-stat"><small>${t.oxygen}</small><strong>${safe(o2)}%</strong></div>
+      <div class="report-stat"><small>${t.spread}</small><strong>${safe(spread)}</strong></div>
+      </div>
+      <h3>${t.system}</h3><p>${safe(eventNote)}</p><p>${safe(crewNote)}</p>
+      <h3>${t.action}</h3><p>${safe(t.fan)}</p>
+      <p><strong>${t.timestamp}:</strong> ${new Date().toLocaleString(aeroLang==="ar"?"ar-EG":aeroLang==="fr"?"fr-FR":"en-US")}</p>
+      <p class="note">${t.reportFoot}</p>
+      <button class="action-btn" type="button" onclick="window.print()">${t.save}</button>`;
+  }
+  setLanguage("en");
+
+</script>
+
+</body>
+</html>
